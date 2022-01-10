@@ -1,10 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"/>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
+    <!-- Bootstrap CSS -->
+    <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"
+    />
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"
+    ></script>
+
+    <!-- 구글폰트 -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Stylish&display=swap"
+            rel="stylesheet"
+    />
+
+    <title>테이스티 서울</title>
+    <meta property="og:title" content="테이스티 서울"/>
+    <meta property="og:description" content="테이스티 서울"/>
+    <meta property="og:image" content=""/>
+    <!-- style -->
+    <style>
+        body {
+            width: 100%;
+            background-color: red;
+            position: relative;
+        }
+
+        .wrap {
+            text-align: center;
+            background-color: white;
+            width: 768px;
+            height: 100vh;
+            margin: auto;
+        }
+    </style>
+    <script>
+            function register() {
+                let email = $("#email-input").val()
+                let password = $("#password-input").val()
+                let nick = $("#nick-input").val()
+                $.ajax({
+                    type: "POST",
+                    url: "/api/register",
+                    data: {email_give:email, password_give:password, nick_give:nick},
+                    success: function (response) { // 성공하면
+                        alert(response["msg"]);
+                        window.location.reload()
+                    }
+                })
+            }
+    </script>
+</head>
+
+<body>
+<div>
+    <div class="background">
+        <div class="wrap">
+            <div><h1>회원가입 페이지</h1></div>
+            <form>
+                <div class="mb-3">
+                    <label for="email-input" class="form-label">이메일</label>
+                    <input type="email" class="form-control" id="email-input" aria-describedby="emailHelp">
+                    <div class="mb-3">
+                        <label for="nick-input" class="form-label">닉네임</label>
+                        <input type="text" class="form-control" id="nick-input" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password-input" class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" id="password-input">
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="register()">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

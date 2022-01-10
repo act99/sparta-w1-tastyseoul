@@ -51,20 +51,7 @@
         }
     </style>
     <script>
-            function register() {
-                let email = $("#email-input").val()
-                let password = $("#password-input").val()
-                let nick = $("#nick-input").val()
-                $.ajax({
-                    type: "POST",
-                    url: "/api/register",
-                    data: {email_give:email, password_give:password, nick_give:nick},
-                    success: function (response) { // 성공하면
-                        alert(response["msg"]);
-                        window.location.reload()
-                    }
-                })
-            }
+
     </script>
 </head>
 
@@ -72,20 +59,18 @@
 <div>
     <div class="background">
         <div class="wrap">
-            <div><h1>회원가입 페이지</h1></div>
+            <div><h1>로그인 페이지</h1></div>
             <form>
                 <div class="mb-3">
                     <label for="email-input" class="form-label">이메일</label>
                     <input type="email" class="form-control" id="email-input" aria-describedby="emailHelp">
-                    <div class="mb-3">
-                        <label for="nick-input" class="form-label">닉네임</label>
-                        <input type="text" class="form-control" id="nick-input" aria-describedby="emailHelp">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password-input" class="form-label">비밀번호</label>
-                        <input type="password" class="form-control" id="password-input">
-                    </div>
-                    <button type="submit" class="btn btn-primary" onclick="register()">Submit</button>
+
+                </div>
+                <div class="mb-3">
+                    <label for="password-input" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password-input">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
