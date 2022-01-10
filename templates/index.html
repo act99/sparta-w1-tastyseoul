@@ -1,52 +1,136 @@
 <!DOCTYPE html>
-<html lang="ko">
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
     <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <!-- JS -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <title>Title</title>
+    <meta property="og:title" content="테이스티 서울"/>
+    <meta property="og:description" content="테이스티 서울"/>
+    <meta property="og:image" content=""/>
 
-    <!-- 구글폰트 -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Stylish&display=swap"
-      rel="stylesheet"
-    />
+    <!--css-->
 
-    <title>테이스티 서울</title>
-    <meta property="og:title" content="테이스티 서울" />
-    <meta property="og:description" content="테이스티 서울" />
-    <meta property="og:image" content="" />
-    <!-- style -->
-    <style type="text/css"></style>
-    <script>
-{#      {% comment %} $(document).ready(function () {#}
-{#        showArticles();#}
-{#      }); {% endcomment %}#}
-    </script>
-  </head>
+    <style>
+        .main-img {
+            height: 200px;
+            width: 100%;
+            background-color: cadetblue;
+            display: flex;
+        }
 
-  <body>
-    <div>
-      <h3>홈 화면</h3>
-      <h3>홈 잘 부탁드립니다.</h3>
+        .write-button {
+            float: right;
+            margin-top: 10px;
+        }
+
+        .search-box {
+            text-align: center;
+            margin-top: 40px;
+
+        }
+
+        .search {
+            width: 500px;
+        }
+
+        .card-columns {
+            margin-top: 30px;
+        }
+
+        .h1-box {
+            display: flex;
+            margin: auto;
+            align-items: center;
+
+
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div class="main-img">
+    <div class="h1-box">
+        <h1>Tasty Seoul</h1>
     </div>
-  </body>
+
+</div>
+
+<button class="write-button"
+        type="button">
+    게시글 작성하기
+</button>
+
+<label for="site-search"></label>
+
+<div class="search-box">
+    <input type="search" class="search"
+           aria-label="Search through site content"
+           placeholder="원하시는 장소를 검색해주세요 :)">
+
+    <button class="search-button">장소검색</button>
+</div>
+
+
+<div class="card-columns">
+    <div class="card-box">
+        <div class="card">
+            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
+                 alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">스파르타 족발</h5>
+                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
+                <button type="button" class="btn btn-primary">좋아요 👍</button>
+                <span>0</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-box">
+        <div class="card">
+            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
+                 alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">스파르타 족발</h5>
+                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
+                <button type="button" class="btn btn-primary">좋아요 👍</button>
+                <span>0</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-box">
+        <div class="card">
+            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
+                 alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">스파르타 족발</h5>
+                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
+                <button type="button" class="btn btn-primary">좋아요 👍</button>
+                <span>0</span>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+</body>
+
 </html>
