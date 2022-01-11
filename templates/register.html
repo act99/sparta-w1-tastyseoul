@@ -61,9 +61,16 @@
                     data: {email_give:email, password_give:password, nick_give:nick},
                     success: function (response) { // 성공하면
                         alert(response["msg"]);
-                        window.location.reload()
+                        if(response["msg"] =="중복된 이메일이 있습니다.") {
+                            window.location.reload()
+                        } else {
+                             window.location.replace('/login')
+                        }
                     }
                 })
+            }
+            function duplicateCheck() {
+                let
             }
     </script>
 </head>

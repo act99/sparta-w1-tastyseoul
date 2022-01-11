@@ -31,6 +31,7 @@
         {#로그아웃 버튼 동작#}
 
         function sign_out() {
+            $.removeCookie('mytoken')
             $.removeCookie('mytoken', {path: '/'});
             alert('로그아웃!')
             window.location.href = "/login"
