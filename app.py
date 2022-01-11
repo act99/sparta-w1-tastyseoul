@@ -1,6 +1,5 @@
 import datetime
 import hashlib
-
 import bson
 import jwt
 from flask import Flask, render_template, jsonify, request, redirect, url_for
@@ -15,13 +14,15 @@ db = client.tastyseoul
 
 SECRET_KEY = '6조비밀키'
 
+
+
 ## HTML을 주는 부분
 @app.route('/')
 def home():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.user.find_one({"email": payload['email']})
+        user_info = db.users.find_one({"email": payload['email']})
         return render_template('index.html', nickname=user_info["nick"])
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
@@ -52,7 +53,15 @@ def api_register():
         "password":pw_hash,
         "nick":nick_receive,
     }
-    db.users.insert_one(doc)
+    # db.users.find({}, {"email"})
+    print("체크")
+    results = db.users.find({"email":"pootter@naver.com"})
+    for result in results:
+        if result['email'] != email_receive:
+            print("email이 없다")
+            return db.users.insert_one(doc)
+        else:
+            print("이메일이 있다.")
 
     return jsonify({'msg':'저장이 완료되었습니다.'})
 
@@ -72,7 +81,8 @@ def api_login():
             'email':email_receive,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
+        print(type(token))
         return jsonify({'result': 'success', 'token': token})
     else:
         return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
