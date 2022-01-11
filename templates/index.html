@@ -6,6 +6,9 @@
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -60,8 +63,6 @@
 
 
         }
-
-
     </style>
 </head>
 
@@ -73,10 +74,9 @@
 
 </div>
 
-<button class="write-button"
-        type="button">
-    게시글 작성하기
-</button>
+<a class="button level-item has-text-centered" aria-label="edit" onclick='$("#modal-edit").addClass("is-active")'>
+    게시물 작성하기<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+</a>
 
 <label for="site-search"></label>
 
@@ -126,10 +126,63 @@
             </div>
         </div>
     </div>
-
-
 </div>
+<div class="modal" id="modal-edit">
+    <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="field">
+                        <label class="label" for="name">#맛집이름</label>
+                        <p class="control">
+                            <input id="name" class="input" placeholder="맛집의 이름은 무엇인가요?">
+                        </p>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="input-pic">#맛집사진</label>
+                        <div class="control is-expanded">
+                            <div class="file has-name">
+                                <label class="file-label" style="width:100%">
+                                    <input id="file" class="file-input" type="file"
+                                           name="resume">
+                                    <span class="file-cta"><span class="file-icon"><i
+                                            class="fa fa-upload"></i></span>
+                                <span class="file-label">이미지 선택하기</span>
+                            </span>
+                                    <span id="file-name" class="file-name"
+                                          style="width:100%;max-width:100%"></span>
+                                </label>
+                            </div>
 
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="textarea-about">#리뷰 작성하기</label>
+                        <p class="control">
+                        <textarea id="comment" class="textarea"
+                                  placeholder="맛집에 대한 리뷰를 작성해주세요!"></textarea>
+                        </p>
+                    </div>
+                    <nav class="level is-mobile">
+                        <div class="level-left">
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <a class="button is-gogo" onclick="posting()">작성하기</a>
+                            </div>
+                            <div class="level-item">
+                                <a class="button is-gogo is-outlined"
+                                   onclick='$("#modal-edit").removeClass("is-active")'>취소</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </article>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-edit").removeClass("is-active")'></button>
 
 </body>
 
