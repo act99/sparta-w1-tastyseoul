@@ -8,7 +8,7 @@
 
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -64,6 +64,39 @@
 
         }
     </style>
+
+    <script>
+        function posting() {
+            let name = $('#foodname').val()
+            let location = $('#foodlocation').val()
+            let comment = $("#foodcomment").val()
+
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("file_give", file)
+            form_data.append("name_give", name)
+            form_data.append("comment_give", comment)
+            form_data.append("location_give", location)
+
+            $.ajax({
+                type: "POST",
+                url: "/postfood",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+
+
+                }
+            });
+        }
+    </script>
+
+
 </head>
 
 <body>
@@ -79,48 +112,28 @@
 </a>
 
 <label for="site-search"></label>
-
-<div class="search-box">
-    <input type="search" class="search"
-           aria-label="Search through site content"
-           placeholder="원하시는 장소를 검색해주세요 :)">
-
-    <button class="search-button">장소검색</button>
-</div>
+<section class="section">
+    <article class="media">
+        <div class="media-content">
+            <div class="field">
+                <p class="control">
+                    <input id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
+                           onclick='$("#modal-post").addClass("is-active")'></p>
+            </div>
+        </div>
+        <button class="button is-link is-light is-rounded"><b>검색</b></button>
+    </article>
+</section>
 
 
 <div class="card-columns">
     <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
+        <div class="card" href="#">
+            <img class="card-img-top" src="{{ file }}"
                  alt="Card image cap">
             <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
+                <h5 class="card-title">{{ name }}</h5>
+                <p class="card-text">{{ location }}</p>
                 <button type="button" class="btn btn-primary">좋아요 👍</button>
                 <span>0</span>
             </div>
@@ -134,13 +147,22 @@
             <article class="media">
                 <div class="media-content">
                     <div class="field">
-                        <label class="label" for="name">#맛집이름</label>
+                        <label class="label" for="name">#맛집 이름</label>
+
                         <p class="control">
-                            <input id="name" class="input" placeholder="맛집의 이름은 무엇인가요?">
+                            <input id="foodname" class="input" placeholder="이 맛집의 이름은?">
                         </p>
                     </div>
                     <div class="field">
-                        <label class="label" for="input-pic">#맛집사진</label>
+                        <label class="label" for="name">#맛집 위치</label>
+
+                        <p class="control">
+                            <input id="foodlocation" class="input" placeholder="이 맛집의 위치는?">
+                        </p>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="input-pic">#맛집 사진</label>
+
                         <div class="control is-expanded">
                             <div class="file has-name">
                                 <label class="file-label" style="width:100%">
@@ -148,7 +170,7 @@
                                            name="resume">
                                     <span class="file-cta"><span class="file-icon"><i
                                             class="fa fa-upload"></i></span>
-                                <span class="file-label">이미지 선택하기</span>
+                                <span class="file-label">파일 선택</span>
                             </span>
                                     <span id="file-name" class="file-name"
                                           style="width:100%;max-width:100%"></span>
@@ -158,14 +180,17 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label" for="textarea-about">#리뷰 작성하기</label>
+                        <label class="label" for="textarea-about">#맛집 리뷰</label>
+
                         <p class="control">
-                        <textarea id="comment" class="textarea"
-                                  placeholder="맛집에 대한 리뷰를 작성해주세요!"></textarea>
+
+                        <textarea id="foodcomment" class="textarea"
+                                  placeholder="간단한 맛집 리뷰를 해주세요!"></textarea>
                         </p>
                     </div>
                     <nav class="level is-mobile">
                         <div class="level-left">
+
                         </div>
                         <div class="level-right">
                             <div class="level-item">
@@ -183,6 +208,7 @@
     </div>
     <button class="modal-close is-large" aria-label="close"
             onclick='$("#modal-edit").removeClass("is-active")'></button>
+</div>
 
 </body>
 

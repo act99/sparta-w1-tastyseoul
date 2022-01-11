@@ -18,7 +18,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
-
+        <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
         <script>
             function sign_out() {
                 $.removeCookie('mytoken', {path: '/'});
