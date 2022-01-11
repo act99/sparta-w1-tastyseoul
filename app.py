@@ -35,7 +35,7 @@ def home():
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 # 디테일
-@app.route('/detail')
+@app.route('/detail/')
 def detail():
     msg = request.args.get("msg")
     return render_template('detail.html')
@@ -160,7 +160,21 @@ def update_like():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         # 좋아요 수 변경
-        return jsonify({"result": "success", 'msg': 'updated'})
+        user_info = db.users.find_one({"username": payload["id"]})
+        post_id_receive = request.form["post_id_give"]
+        type_receive = request.form["type_give"]
+        action_receive = request.form["action_give"]
+        doc = {
+            "post_id": post_id_receive,
+            "username": user_info["username"],
+            "type": type_receive
+        }
+        if action_receive == "like":
+            db.likes.insert_one(doc)
+        else:
+            db.likes.delete_one(doc)
+        count = db.likes.count_documents({"post_id": post_id_receive, "type": type_receive})
+        return jsonify({"result": "success", 'msg': 'updated', "count": count})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -203,7 +217,26 @@ def save_post():
 
 @app.route("/get_postfood", methods=['GET'])
 def show_post():
-    reviews = list(db.foodlist.find({}, {'_id': False}))
+    reviews = []
+    results = list(db.foodlist.find({}, {}))
+    for result in results:
+        _id = str(result['_id'])
+        name = result['name']
+        location = result['location']
+        comment = result['comment']
+        file = result['file']
+        username = result['username']
+        profile_name = result['profile_name']
+        doc = {
+            "_id": _id,
+            "name": name,
+            "location": location,
+            "comment": comment,
+            "file": file,
+            "username": username,
+            "profile_name": profile_name
+        }
+        reviews.append(doc)
     return jsonify({'all_review': reviews})
 
 
