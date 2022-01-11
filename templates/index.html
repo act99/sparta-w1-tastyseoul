@@ -66,6 +66,11 @@
     </style>
 
     <script>
+        $(document).ready(function () {
+            $('#cards-box').empty()
+            listing()
+        })
+
         function posting() {
             let name = $('#foodname').val()
             let location = $('#foodlocation').val()
@@ -94,8 +99,6 @@
                 }
             });
         }
-<<<<<<< Updated upstream
-=======
         function listing() {
             $.ajax({
                 type: "GET",
@@ -132,6 +135,8 @@
             })
         }
 
+        {#검색기능구현#}
+
         function filter() {
             let search = document.getElementById("input-post").value.toLowerCase();
             let card = document.getElementsByClassName("card");
@@ -148,7 +153,6 @@
                 }
             }
         }
->>>>>>> Stashed changes
     </script>
 
 
@@ -162,7 +166,7 @@
 
 </div>
 
-<a class="button level-item has-text-centered" aria-label="edit" onclick='$("#modal-edit").addClass("is-active")'>
+<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;" onclick='$("#modal-edit").addClass("is-active")'>
     게시물 작성하기<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
 </a>
 
@@ -176,18 +180,18 @@
                            onclick='$("#modal-post").addClass("is-active")'></p>
             </div>
         </div>
-        <button class="button is-link is-light is-rounded"><b>검색</b></button>
     </article>
 </section>
 
 
-<div class="card-columns">
+<div class="card-columns" id="cards-box">
     <div class="card-box">
         <div class="card" href="#">
             <img class="card-img-top" src="{{ file }}"
                  alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">{{ name }}</h5>
+                <p class="card-text">{{ location }}</p>
                 <p class="card-text">{{ location }}</p>
                 <button type="button" class="btn btn-primary">좋아요 👍</button>
                 <span>0</span>
@@ -249,7 +253,8 @@
                         </div>
                         <div class="level-right">
                             <div class="level-item">
-                                <a class="button is-gogo" onclick="posting()">작성하기</a>
+                                <a class="button is-gogo" onclick="posting()">작성하기
+                                </a>
                             </div>
                             <div class="level-item">
                                 <a class="button is-gogo is-outlined"
