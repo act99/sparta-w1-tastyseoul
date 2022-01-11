@@ -8,7 +8,7 @@
 
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -94,6 +94,61 @@
                 }
             });
         }
+<<<<<<< Updated upstream
+=======
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/get_postfood",
+                data: {},
+                success: function (response) {
+                    let reviews = response['all_review']
+                    for (let i = 0; i < reviews.length; i++) {
+                        let name = reviews[i]['name']
+                        let location = reviews[i]['location']
+                        let file = reviews[i]['file']
+                        let writer = reviews[i]['profile_name']
+
+                        let temp_html = `<div class="card-columns">
+                                            <div class="card-box">
+                                                <div class="card" href="#">
+                                                    <figure class="image is-4by3">
+                                                         <img src="../static/${file}" class="card-img-top" alt=${name}>
+                                                        </figure>
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">${name}</h5>
+                                                        <p class="card-text">${location}</p>
+                                                        <p class="card-text">작성자: ${writer}</p>
+                                                        <button type="button" class="btn btn-primary">좋아요 👍</button>
+                                                        <span>0</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`
+
+                        $('#cards-box').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function filter() {
+            let search = document.getElementById("input-post").value.toLowerCase();
+            let card = document.getElementsByClassName("card");
+
+            for (let i = 0; i < card.length; i++) {
+                cardtitle = card[i].getElementsByClassName("card-title");
+                cardtext = card[i].getElementsByClassName("card-text");
+                if (cardtitle[0].innerHTML.toLowerCase().indexOf(search) != -1 ||
+                    cardtext[0].innerHTML.toLowerCase().indexOf(search) != -1
+                ) {
+                    card[i].style.display = ""
+                } else {
+                    card[i].style.display = "none"
+                }
+            }
+        }
+>>>>>>> Stashed changes
     </script>
 
 
@@ -117,7 +172,7 @@
         <div class="media-content">
             <div class="field">
                 <p class="control">
-                    <input id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
+                    <input id="input-post" class="input is-rounded" onkeyup="filter()" placeholder="맛집 장소를 검색해주세요"
                            onclick='$("#modal-post").addClass("is-active")'></p>
             </div>
         </div>
