@@ -21,6 +21,28 @@
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
     <meta property="og:image" content=""/>
+
+    <script>
+        function posting() {
+            let foodname = $('#foodname').val()
+            let location = $('#foodlocation').val()
+            let comment = $('#foodcomment').val()
+            $.ajax({
+                type: "POST",
+                url: "/posting",
+                data: {
+                    foodname_give: foodname
+                    location_give: location
+                    comment_give: comment
+                },
+                success: function (response) {
+                    $("#modal-post").removeClass("is-active")
+                    window.location.reload()
+                }
+            })
+        }
+        }
+    </script>
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
