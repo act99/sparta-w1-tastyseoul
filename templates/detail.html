@@ -26,7 +26,7 @@
 <!--네비게이션(로고+메뉴)-->
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
     <div class="navbar-brand" style=>
-        <a class="navbar-item" href="/" style="margin-left: 50px; margin-right: 1400px;">
+        <a class="navbar-item" href="/" style="margin-left: 60px; margin-right: 1520px;">
             <!--<img src="url_for('static', filename='logo_tastySeoul.png')"> app.py 연동시키면 나옴-->
             <strong class="logoText"
                     style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
@@ -39,9 +39,6 @@
             <button class="nav-item button is-info is-light"
                     style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
                     onclick="sign_out()" id="logout">logout
-            </button>
-            <button class="nav-item button is-info" style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                    onclick="location.href='/register" id="sign-up">Sign Up
             </button>
         </div>
     </div>
@@ -79,9 +76,9 @@
     <!--유저들 리뷰출력 및 코멘트작성-->
     <div class="box review-making-box">
         <div class="section">
-            <div id="post-box" class="container">
+            <div id="nickname-box" class="container">
                 <p>닉네임 DB를 연결하세요</p>
-                <div id="review-box" class="media-content">
+                <div id="comment-box" class="media-content">
                     <div class="review-a">
                         <p>코멘트내용을 DB연결하세요</p>
                     </div>
@@ -89,9 +86,9 @@
             </div>
         </div>
         <div class="section">
-            <div id="post-box" class="container">
+            <div id="nickname-box" class="container">
                 <p>닉네임 DB를 연결하세요</p>
-                <div id="review-box" class="media-content">
+                <div id="comment-box" class="media-content">
                     <div class="review-a">
                         <p>코멘트내용을 DB연결하세요</p>
                     </div>
