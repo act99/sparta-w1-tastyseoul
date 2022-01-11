@@ -147,6 +147,7 @@ def get_posts():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
         # 포스팅 목록 받아오기
         return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다."})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -163,31 +164,47 @@ def update_like():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+
+
 @app.route('/postfood', methods=['POST'])
 def save_post():
-    location_receive = request.form['location_give']
-    name_receive = request.form['name_give']
-    comment_receive = request.form['comment_give']
-    file = request.files["file_give"]
-    extention = file.filename.split('.')[-1]
-    today = datetime.now()
-    mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
+        location_receive = request.form['location_give']
+        name_receive = request.form['name_give']
+        comment_receive = request.form['comment_give']
+        file = request.files["file_give"]
+        extention = file.filename.split('.')[-1]
+        today = datetime.now()
+        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
-    filename = f'file-{mytime}'
+        filename = f'file-{mytime}'
 
-    save_to = f'static/{filename}.{extention}'
-    file.save(save_to)
+        save_to = f'static/{filename}.{extention}'
+        file.save(save_to)
 
-    doc = {
-        'name':name_receive,
-        'location':location_receive,
-        'comment':comment_receive,
-        'file': f'{filename}.{extention}'
-    }
+        doc = {
+            "username": user_info["username"],
+            "profile_name": user_info["profile_name"],
+            'name': name_receive,
+            'location': location_receive,
+            'comment': comment_receive,
+            'file': f'{filename}.{extention}'
+        }
 
-    db.foodlist.insert_one(doc)
+        db.foodlist.insert_one(doc);
 
-    return jsonify({'msg': '저장 완료!'})
+        return jsonify({'msg': '저장 완료!'})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+
+@app.route("/get_postfood", methods=['GET'])
+def show_post():
+    reviews = list(db.foodlist.find({}, {'_id': False}))
+    return jsonify({'all_review': reviews})
 
 
 if __name__ == '__main__':
