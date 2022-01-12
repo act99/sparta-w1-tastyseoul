@@ -26,17 +26,18 @@
     <script>
         $(document).ready(function () {
             $('#box review-making-box').empty()
-            comment_listing()
         })
 
-        function comment() {
+        function comment(postingId) {
             let comment = $("#comment-post").val()
+            let posting_id = postingId
             console.log(comment)
             $.ajax({
                 type: "POST",
                 url: "/comment",
                 data: {
                     comment_give: comment,
+                    posting_id_give: posting_id
                 },
                 success: function (response) {
                     alert(response["msg"])
@@ -45,46 +46,72 @@
             })
         }
 
-        function comment_listing() {
-            $.ajax({
-                type: "GET",
-                url: "/get_comment",
-                data: {},
-                success: function (response) {
-                    let reviews = response['all_review']
-                    for (let i = 0; i < reviews.length; i++) {
+        {#function comment_listing() {#}
+        {##}
+        {#    $.ajax({#}
+        {#        type: "GET",#}
+        {#        url: "/get_comment",#}
+        {#        data: {},#}
+        {#        success: function (response) {#}
+        {#            let reviews = response['all_review']#}
+        {#            for (let i = 0; i < reviews.length; i++) {#}
+        {##}
+        {#                let username = reviews[i]['username']#}
+        {#                let comment = reviews[i]['comment']#}
+        {#                let temp_html = `#}
+        {#    <div class="section">#}
+        {#        <div id="nickname-box" class="container">#}
+        {#            <p>${username}</p>#}
+        {#            <div id="comment-box" class="media-content">#}
+        {#                <div class="review-a">#}
+        {#                    <p>${comment}</p>#}
+        {#                    <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+        {#    `#}
+        {#                $('#box-review-making-box').append(temp_html)#}
+        {#            }#}
+        {#        }#}
+        {#    })#}
 
-                        let username = reviews[i]['username']
-                        let comment = reviews[i]['comment']
-                        let temp_html = `
-            <div class="section">
-                <div id="nickname-box" class="container">
-                    <p>${username}</p>
-                    <div id="comment-box" class="media-content">
-                        <div class="review-a">
-                            <p>${comment}</p>
-                            <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            `
-                        $('#box-review-making-box').append(temp_html)
-                    }
+
+        {#function comment_delete(comment) {#}
+        {#    console.log(comment)#}
+        {#    $.ajax({#}
+        {#            type: "POST",#}
+        {#            url: "/comment/delete",#}
+        {#            data: {comment_give: comment},#}
+        {#            success: function (response) {#}
+        {#                alert(response['msg'])#}
+        {#            }#}
+        {#        }#}
+        {#    )#}
+
+
+        function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
                 }
-            })
+            });
         }
 
-        function comment_delete(comment) {
-            console.log(comment)
+        function deletefood(_id, writer) {
             $.ajax({
-                    type: "POST",
-                    url: "/comment/delete",
-                    data: {comment_give: comment},
-                    success: function (response) {
-                        alert(response['msg'])
-                    }
+                type: "POST",
+                url: "/postfood/delete",
+                data: {_id_give: _id, writer_give: writer},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.replace('/')
                 }
-            )
+            });
+
         }
 
         function sign_out() {
@@ -100,7 +127,6 @@
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
     <div class="navbar-brand" style=>
         <a class="navbar-item" href="/" style="margin-left: 60px; margin-right: 1520px;">
-            <img src="url_for('static', filename='logo_tastySeoul.png')">
             <strong class="logoText"
                     style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
         </a>
@@ -120,7 +146,7 @@
 <div class="wrap" style="width: 600px; height: auto; margin: auto">
     <div id="foodcard" style="margin-top: 100px;">
         <div class="card mb-3">
-            <img src="{{ img_file }}"
+            <img src="../static/{{ food.file }}"
                  class="card-img-top"
                  alt="테스트">
             <div class="card-body" style="margin: 10px;">
@@ -128,16 +154,16 @@
                 <h5 class="card-text">{{ food.location }}</h5>
                 <br>
                 <label style="margin-bottom: 10px;"><b>{{ food.comment }}</b></label>
-                <p class="card-text">{{ description }}</p>
             </div>
             <footer class="card-footer" style="font-size: 20px;">
-                <a href="#" onclick="likeFood()" class="card-footer-item has-text-info">
-                    좋아요
+                <a onclick="toggle_like('{{ food._id }}')" class="card-footer-item has-text-info">
+                    좋아요 {{ food.likes }}
                     <span class="icon">
               <i class="fa fa-heart"></i>
             </span>
                 </a>
-                <a href="#" onclick="deletefood()" class="card-footer-item has-text-danger">
+                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')"
+                   class="card-footer-item has-text-danger">
                     삭제
                     <span class="icon">
               <i class="fa fa-ban"></i>
@@ -146,18 +172,10 @@
             </footer>
         </div>
     </div>
+
     <!--유저들 리뷰출력 및 코멘트작성-->
     <div class="box review-making-box" id="box-review-making-box">
-        <div class="section">
-            <div id="nickname-box" class="container">
-                <p>{{ nick }}</p>
-                <div id="comment-box" class="media-content">
-                    <div class="review-a">
-                        <p>{{ comment }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div class="field">
             <label class="label review-box">＃코멘트 쓰기</label>
             <div class="control">
@@ -166,7 +184,17 @@
         </div>
         <div class="field is-grouped">
             <div class="control" style="margin: auto">
-                <button id="review-box" onclick="comment()" class="nav-item button is-info">저장하기</button>
+                <button id="review-box" onclick="comment('{{ food._id }}')" class="nav-item button is-info">저장하기
+                </button>
+            </div>
+        </div>
+        <div class="section">
+            <div id="nickname-box" class="container">
+                {% for comment in food.comments %}
+                      <p>{{ comment.comment }}</p>
+                    <p>{{ comment.username }}</p>
+                    <button type="button" class="btn btn-primary">삭제</button>
+                {% endfor %}
             </div>
         </div>
     </div>
