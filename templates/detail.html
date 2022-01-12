@@ -113,7 +113,7 @@
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
-<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ff9583">
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ffc9c0; z-index: 1">
     <a class="navbar-item" href="/" style="margin-left: 30px;">
         <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
         <strong class="logoText"
@@ -127,9 +127,11 @@
     </div>
     </div>
 </nav>
+
 <!--맛집 게시물 출력-->
+<div style="background-color: #fff1ee">
 <div class="wrap">
-    <div id="foodcard" style="margin-top: 100px;">
+    <div id="foodcard" style="padding-top: 100px; z-index: 3">
         <div class="card mb-3">
             <img src="../static/{{ food.file }}"
                  class="card-img-top"
@@ -185,6 +187,7 @@
             </div>
         </section>
     </div>
+</div>
 </div>
 </body>
 </html>

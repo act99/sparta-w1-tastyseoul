@@ -210,6 +210,8 @@ def show_post():
                 'comments':comments
             }
             reviews.append(doc)
+            # 최신버전 가져오기
+            reviews.reverse()
         # 포스팅 목록 받아오기
         return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):

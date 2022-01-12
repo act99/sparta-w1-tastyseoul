@@ -25,7 +25,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-
     <title>테이스티서울</title>
 
     <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
@@ -90,7 +89,7 @@
                         let likes = reviews[i]['likes']
                         let comments = reviews[i]['comments'].length
                         let temp_html = `
-                            <div class="card" id="${_id}" >
+                            <div class="card" id="${_id}" style="margin-bottom: 50px" >
                                 <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/${_id}'">
                                      <img src="../static/${file}" class="card-img-top" alt=${name}>
                                     </figure>
@@ -141,11 +140,13 @@
                 }
             }
         }
+
         function sign_out() {
             document.cookie = "mytoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             alert('로그아웃')
             window.location.replace("/login")
         }
+
         function move_profile() {
 
         }
@@ -153,7 +154,7 @@
 </head>
 
 <body>
-<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ff9583">
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ffc9c0">
     <a class="navbar-item" href="/" style="margin-left: 30px;">
         <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
         <strong class="logoText"
@@ -167,11 +168,14 @@
     </div>
     </div>
 </nav>
+
+<div style="width: 100%; height: 100vh; background-color: #ff9583; opacity: 0.1; position: fixed; top: 0"></div>
+
 <div class="wrap">
     <div class="main-img">
         <div class="h1-box">
             <h1 style="font-family: 'Do Hyeon', sans-serif;color:  #ff9583">TASTYSEOUL</h1>
-                        <h3 style="font-family: 'Do Hyeon', sans-serif;color: #ff9583; text-align: center">서울의 맛집을 한눈에!</h3>
+            <h3 style="font-family: 'Do Hyeon', sans-serif;color: #ff9583; text-align: center">서울의 맛집을 한눈에!</h3>
             <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
                    placeholder="맛집 장소를 검색해주세요"
                    onclick='$("#modal-post").addClass("is-active")'></p>
@@ -179,6 +183,11 @@
 
     </div>
 
+    <div class="fab-container" onclick='$("#modal-edit").addClass("is-active")'>
+<div class="button3 iconbutton">
+<i class="fas fa-plus"></i>
+</div>
+</div>
 
     {#<label for="site-search"></label>#}
     {#<section class="section search-section">#}
@@ -192,14 +201,6 @@
     {#        </div>#}
     {#    </article>#}
     {#</section>#}
-
-
-    <a class="button level-item has-text-centered" aria-label="edit"
-       style="width: 200px; margin: auto; margin-top: 30px;"
-       onclick='$("#modal-edit").addClass("is-active")'>
-        맛집 추천하기😎<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
-    </a>
-
 
     <div class="card-box" id="cards-box">
     </div>
