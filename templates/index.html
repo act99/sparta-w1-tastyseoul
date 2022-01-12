@@ -153,17 +153,13 @@
 </head>
 
 <body>
-<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ff9583">
     <a class="navbar-item" href="/" style="margin-left: 30px;">
         <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
         <strong class="logoText"
                 style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
     </a>
     <div style="float: right; margin-right: 30px;">
-        <button class="nav-item button is-info is-light"
-                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                onclick="location.href='/login'" id="sign-in">Login
-        </button>
         <button class="nav-item button is-info is-light"
                 style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
                 onclick="sign_out()" id="logout">logout
@@ -174,7 +170,8 @@
 <div class="wrap">
     <div class="main-img">
         <div class="h1-box">
-            <h1>Tasty Seoul</h1>
+            <h1 style="font-family: 'Do Hyeon', sans-serif;color:  #ff9583">TASTYSEOUL</h1>
+                        <h3 style="font-family: 'Do Hyeon', sans-serif;color: #ff9583; text-align: center">서울의 맛집을 한눈에!</h3>
             <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
                    placeholder="맛집 장소를 검색해주세요"
                    onclick='$("#modal-post").addClass("is-active")'></p>

@@ -31,6 +31,11 @@
     <meta property="og:image" content=""/>
 
     <style>
+        .wrap {
+            margin: 10px auto auto auto;
+            width: 600px;
+        }
+
         a:link {
             text-decoration: none;
         }
@@ -45,6 +50,10 @@
 
         .commentbox {
             margin-bottom: 30px;
+        }
+
+        * {
+            font-family: 'Do Hyeon', sans-serif
         }
     </style>
     <script>
@@ -104,20 +113,22 @@
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
-<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/" style="margin-left: 30px;">
-            <strong class="logoText"
-                    style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
-        </a>
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ff9583">
+    <a class="navbar-item" href="/" style="margin-left: 30px;">
+        <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+        <strong class="logoText"
+                style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+    </a>
+    <div style="float: right; margin-right: 30px;">
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="sign_out()" id="logout">logout
+        </button>
     </div>
-    <button class="nav-item button is-info is-light"
-            style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px; float: right; margin-right: 30px;"
-            onclick="sign_out()" id="logout">logout
-    </button>
+    </div>
 </nav>
 <!--맛집 게시물 출력-->
-<div class="wrap" style="width: 600px; height: auto; margin: auto">
+<div class="wrap">
     <div id="foodcard" style="margin-top: 100px;">
         <div class="card mb-3">
             <img src="../static/{{ food.file }}"
@@ -166,9 +177,9 @@
             <div id="nickname-box" class="container">
                 {% for comment in food.comments %}
                     <div class="commentbox">
-                    <p>{{ comment.comment }}</p>
-                    <p>{{ comment.username }}</p>
-                    <button type="button" class="btn btn-primary">삭제</button>
+                        <p>{{ comment.comment }}</p>
+                        <p>{{ comment.username }}</p>
+                        <button type="button" class="btn btn-primary">삭제</button>
                     </div>
                 {% endfor %}
             </div>
