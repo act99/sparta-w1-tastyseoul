@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -22,7 +23,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+
     <title>Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
+
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
     <meta property="og:image" content=""/>
@@ -37,20 +44,6 @@
             display: flex;
         }
 
-        .write-button {
-            float: right;
-            margin-top: 10px;
-        }
-
-        .search-box {
-            text-align: center;
-            margin-top: 40px;
-
-        }
-
-        .search {
-            width: 500px;
-        }
 
         .card-columns {
             margin-top: 30px;
