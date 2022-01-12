@@ -8,7 +8,7 @@
 
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -30,6 +30,9 @@
     />
     <!-- ... -->
     <title>Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
     <meta property="og:image" content=""/>
@@ -44,24 +47,6 @@
             display: flex;
         }
 
-        .write-button {
-            float: right;
-            margin-top: 10px;
-        }
-
-        .search-box {
-            text-align: center;
-            margin-top: 40px;
-
-        }
-
-        .search {
-            width: 500px;
-        }
-
-        .card-columns {
-            margin-top: 30px;
-        }
 
         .h1-box {
             display: flex;
@@ -170,12 +155,35 @@
 </head>
 
 <body>
-<div class="main-img">
-    <div class="h1-box">
-        <h1>Tasty Seoul</h1>
-    </div>
 
+<div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="https://cdn.crowdpic.net/list-thumb/thumb_l_0E388F8BD30A281244E8CF9B9AD7AD0D.jpg" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
 </div>
+
+{#<div class="main-img">#}
+{#    <div class="h1-box">#}
+{#        <h1>Tasty Seoul</h1>#}
+{#    </div>#}
+{##}
+{#</div>#}
 
 <a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
    onclick='$("#modal-edit").addClass("is-active")'>
@@ -192,7 +200,6 @@
                            onclick='$("#modal-post").addClass("is-active")'></p>
             </div>
         </div>
-        <button class="button is-link is-light is-rounded"><b>검색</b></button>
     </article>
 </section>
 
