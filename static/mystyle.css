@@ -1,13 +1,46 @@
 
-.card-columns {
-    margin: 0px 300px;
+body {
+    margin: 10px auto;
+    width: 40%;
 }
 
+
 .main-img {
-    margin-top: 3%;
+    display: flex;
+    margin-top: 10%;
     height: 400px;
     width: 100%;
     background-image: url("https://src.hidoc.co.kr/image/lib/2020/10/14/1602663615388_0.jpg");
-    display: flex;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
+.navbar {
+    position: sticky;
+    top: 0px;
+}
+
+.h1-box {
+
+    margin: auto;
+
+}
+h1 {
+    font-size: 100px;
+}
+.search-ok {
+    margin-top: 10%;
+    width: 100%;
+}
+
+.card-columns {
+    margin-top: 30px;
+}
+
+.earch-section {
+    padding: 0;
+}
+
+.review-box {
+    width: 40%;
+}
