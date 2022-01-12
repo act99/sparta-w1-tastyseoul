@@ -5,11 +5,17 @@
 
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -19,118 +25,257 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <title>Title</title>
+    <title>테이스티서울</title>
+
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
     <meta property="og:title" content="테이스티 서울"/>
-    <meta property="og:description" content="테이스티 서울"/>
+    <meta property="og:description" content="서울의 맛집을 한눈에"/>
     <meta property="og:image" content=""/>
 
     <!--css-->
-
     <style>
-        .main-img {
-            height: 200px;
-            width: 100%;
-            background-color: cadetblue;
-            display: flex;
-        }
-
-        .write-button {
-            float: right;
-            margin-top: 10px;
-        }
-
-        .search-box {
-            text-align: center;
-            margin-top: 40px;
-
-        }
-
-        .search {
-            width: 500px;
-        }
-
-        .card-columns {
-            margin-top: 30px;
-        }
-
-        .h1-box {
-            display: flex;
-            margin: auto;
-            align-items: center;
-
-
-        }
-
-
     </style>
+
+    <script>
+
+
+        $(document).ready(function () {
+            $('#cards-box').empty()
+            listing()
+        })
+
+        function posting() {
+            let name = $('#foodname').val()
+            let location = $('#foodlocation').val()
+            let comment = $("#foodcomment").val()
+
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("file_give", file)
+            form_data.append("name_give", name)
+            form_data.append("comment_give", comment)
+            form_data.append("location_give", location)
+
+            $.ajax({
+                type: "POST",
+                url: "/postfood",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+
+
+                }
+            });
+        }
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/get_postfood",
+                data: {},
+                success: function (response) {
+                    let reviews = response['all_review']
+                    for (let i = 0; i < reviews.length; i++) {
+                        let _id = reviews[i]['_id']
+                        let name = reviews[i]['name']
+                        let location = reviews[i]['location']
+                        let file = reviews[i]['file']
+                        let writer = reviews[i]['profile_name']
+                        let likes = reviews[i]['likes']
+                        let comments = reviews[i]['comments'].length
+                        let temp_html = `
+                            <div class="card" id="${_id}" style="margin-bottom: 50px" >
+                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/${_id}'">
+                                     <img src="../static/${file}" class="card-img-top" alt=${name}>
+                                    </figure>
+                                <div class="card-body" >
+                                    <h5 class="card-title">${name}</h5>
+                                    <p class="card-text">${location}</p>
+                                    <p class="card-text">작성자: ${writer}</p>
+                                    <p class="card-text">댓글 수: ${comments}</p>
+                                    <a class="btn" aria-label="heart" onclick="toggle_like('${_id}')">
+                                    <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                    &nbsp;<span class="like-num">${likes}</span></a>
+
+                                </div>
+                            </div>`
+                        $('#cards-box').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id.toString()},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        {#검색기능구현#}
+
+        function filter() {
+            let search = document.getElementById("input-post").value.toLowerCase();
+            let card = document.getElementsByClassName("card");
+
+            for (let i = 0; i < card.length; i++) {
+                cardtitle = card[i].getElementsByClassName("card-title");
+                cardtext = card[i].getElementsByClassName("card-text");
+                if (cardtitle[0].innerHTML.toLowerCase().indexOf(search) != -1 ||
+                    cardtext[0].innerHTML.toLowerCase().indexOf(search) != -1
+                ) {
+                    card[i].style.display = ""
+                } else {
+                    card[i].style.display = "none"
+                }
+            }
+        }
+
+        function sign_out() {
+            document.cookie = "mytoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            alert('로그아웃')
+            window.location.replace("/login")
+        }
+
+        function move_profile() {
+
+        }
+    </script>
 </head>
 
 <body>
-<div class="main-img">
-    <div class="h1-box">
-        <h1>Tasty Seoul</h1>
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ffc9c0">
+    <a class="navbar-item" href="/" style="margin-left: 30px;">
+        <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+        <strong class="logoText"
+                style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+    </a>
+    <div style="float: right; margin-right: 30px;">
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="sign_out()" id="logout">logout
+        </button>
+    </div>
+    </div>
+</nav>
+
+<div style="width: 100%; height: 100vh; background-color: #ff9583; opacity: 0.1; position: fixed; top: 0"></div>
+
+<div class="wrap">
+    <div class="main-img">
+        <div class="h1-box">
+            <h1 style="font-family: 'Do Hyeon', sans-serif;color:  #ff9583">TASTYSEOUL</h1>
+            <h3 style="font-family: 'Do Hyeon', sans-serif;color: #ff9583; text-align: center">서울의 맛집을 한눈에!</h3>
+            <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
+                   placeholder="맛집 장소를 검색해주세요"
+                   onclick='$("#modal-post").addClass("is-active")'></p>
+        </div>
+
     </div>
 
+    <div class="fab-container" onclick='$("#modal-edit").addClass("is-active")'>
+<div class="button3 iconbutton">
+<i class="fas fa-plus"></i>
+</div>
 </div>
 
-<button class="write-button"
-        type="button">
-    게시글 작성하기
-</button>
+    {#<label for="site-search"></label>#}
+    {#<section class="section search-section">#}
+    {#    <article class="media">#}
+    {#        <div class="media-content">#}
+    {#            <div class="field">#}
+    {#                <p class="control">#}
+    {#                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"#}
+    {#                           onclick='$("#modal-post").addClass("is-active")'></p>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </article>#}
+    {#</section>#}
 
-<label for="site-search"></label>
+    <div class="card-box" id="cards-box">
+    </div>
 
-<div class="search-box">
-    <input type="search" class="search"
-           aria-label="Search through site content"
-           placeholder="원하시는 장소를 검색해주세요 :)">
+    <div class="modal" id="modal-edit">
+        <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
+        <div class="modal-content review-box">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="field">
+                            <label class="label" for="name">#맛집 이름</label>
 
-    <button class="search-button">장소검색</button>
+                            <p class="control">
+                                <input id="foodname" class="input" placeholder="이 맛집의 이름은?">
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="name">#맛집 위치</label>
+
+                            <p class="control">
+                                <input id="foodlocation" class="input" placeholder="이 맛집의 위치는?">
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="input-pic">#맛집 사진</label>
+
+                            <div class="control is-expanded">
+                                <div class="file has-name">
+                                    <label class="file-label" style="width:100%">
+                                        <input id="file" class="file-input" type="file"
+                                               name="resume">
+                                        <span class="file-cta"><span class="file-icon"><i
+                                                class="fa fa-upload"></i></span>
+                                <span class="file-label">파일 선택</span>
+                            </span>
+                                        <span id="file-name" class="file-name"
+                                              style="width:100%;max-width:100%"></span>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="textarea-about">#맛집 리뷰</label>
+
+                            <p class="control">
+
+                        <textarea id="foodcomment" class="textarea"
+                                  placeholder="간단한 맛집 리뷰를 해주세요!"></textarea>
+                            </p>
+                        </div>
+                        <nav class="level is-mobile">
+                            <div class="level-left">
+
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <a class="button is-gogo" onclick="posting()">작성하기
+                                    </a>
+                                </div>
+                                <div class="level-item">
+                                    <a class="button is-gogo is-outlined"
+                                       onclick='$("#modal-edit").removeClass("is-active")'>취소</a>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"
+                onclick='$("#modal-edit").removeClass("is-active")'></button>
+    </div>
 </div>
-
-
-<div class="card-columns">
-    <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-box">
-        <div class="card">
-            <img class="card-img-top" src="https://cdn.mkhealth.co.kr/news/photo/201806/img_MKH180615003_0.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">스파르타 족발</h5>
-                <p class="card-text">서울 영등포구 신풍로 76 1층 2호</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-
 </body>
 
 </html>
