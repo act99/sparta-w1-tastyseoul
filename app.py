@@ -217,27 +217,34 @@ def save_post():
 
 @app.route("/get_postfood", methods=['GET'])
 def show_post():
+    token_receive = request.cookies.get('mytoken')
     reviews = []
-    results = list(db.foodlist.find({}, {}))
-    for result in results:
-        _id = str(result['_id'])
-        name = result['name']
-        location = result['location']
-        comment = result['comment']
-        file = result['file']
-        username = result['username']
-        profile_name = result['profile_name']
-        doc = {
-            "_id": _id,
-            "name": name,
-            "location": location,
-            "comment": comment,
-            "file": file,
-            "username": username,
-            "profile_name": profile_name
-        }
-        reviews.append(doc)
-    return jsonify({'all_review': reviews})
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        results = list(db.foodlist.find({}, {}))
+        for result in results:
+            _id = str(result['_id'])
+            name = result['name']
+            location = result['location']
+            comment = result['comment']
+            file = result['file']
+            username = result['username']
+            profile_name = result['profile_name']
+            doc = {
+                "_id": _id,
+                "name": name,
+                "location": location,
+                "comment": comment,
+                "file": file,
+                "username": username,
+                "profile_name": profile_name
+            }
+            reviews.append(doc)
+        # 포스팅 목록 받아오기
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 
 if __name__ == '__main__':
