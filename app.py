@@ -1,3 +1,5 @@
+import random
+
 from bson import ObjectId
 from pymongo import MongoClient
 import jwt
@@ -208,6 +210,7 @@ def save_post():
         save_to = f'static/{filename}.{extention}'
         file.save(save_to)
         likes = 0
+        comments = []
         doc = {
             "username": user_info["username"],
             "profile_name": user_info["profile_name"],
@@ -215,7 +218,8 @@ def save_post():
             'location': location_receive,
             'comment': comment_receive,
             'file': f'{filename}.{extention}',
-            'likes': likes
+            'likes': likes,
+            'comments': comments
         }
 
         db.foodlist.insert_one(doc);
@@ -240,6 +244,7 @@ def show_post():
             username = result['username']
             profile_name = result['profile_name']
             likes = result['likes']
+            comments = result['comments']
             doc = {
                 "_id": _id,
                 "name": name,
@@ -248,7 +253,8 @@ def show_post():
                 "file": file,
                 "username": username,
                 "profile_name": profile_name,
-                'likes':likes
+                'likes':likes,
+                'comments':comments
             }
             reviews.append(doc)
         # 포스팅 목록 받아오기
@@ -287,15 +293,23 @@ def update_like():
 def commenting():
         token_receive = request.cookies.get('mytoken')
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        posting_id_receive = request.form['posting_id_give']
+        comment_receive = request.form["comment_give"]
         # 댓글
         user_info = db.users.find_one({"username": payload["id"]})
-        comment_receive = request.form["comment_give"]
-
         doc = {
-            "username": user_info["username"],
-            "comment": comment_receive,
+            'username':user_info['username'],
+            'comment':comment_receive,
+            '_id':random.randint(1,10000)
         }
-        db.comments.insert_one(doc)
+        db.foodlist.update_one({"_id":ObjectId(posting_id_receive)}, {'$push': {'comments':doc}})
+
+        # doc = {
+        #     "username": user_info["username"],
+        #     "comment": comment_receive,
+        #     "posting_id": posting_id_receive
+        # }
+        # db.comments.insert_one(doc)
         return jsonify({"result": "success", 'msg': '댓글 저장'})
 
 
@@ -303,20 +317,21 @@ def commenting():
 @app.route("/get_comment", methods=['GET'])
 def comment_show():
     reviews = []
-    results = list(db.comments.find({}, {}))
-    for result in results:
-        _id = str(result['_id'])
-        username = result['username']
-        comment = result['comment']
 
-        doc = {
-            "_id": _id,
-            "username": username,
-            "comment": comment
-
-
-        }
-        reviews.append(doc)
+    # results = list(db.comments.find_one({"posting_id":posting_id_receive}, {}))
+    # print(results)
+    # for result in results:
+    #     _id = str(result['_id'])
+    #     username = result['username']
+    #     comment = result['comment']
+    #     posting_id = result["posting_id"]
+    #     doc = {
+    #         "_id": _id,
+    #         "username": username,
+    #         "comment": comment,
+    #         "posting_id": posting_id
+    #     }
+    #     reviews.append(doc)
     return jsonify({'all_review': reviews})
 
 

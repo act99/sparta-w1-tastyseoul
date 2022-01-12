@@ -29,14 +29,16 @@
             comment_listing()
         })
 
-        function comment() {
+        function comment(postingId) {
             let comment = $("#comment-post").val()
+            let posting_id = postingId
             console.log(comment)
             $.ajax({
                 type: "POST",
                 url: "/comment",
                 data: {
                     comment_give: comment,
+                    posting_id_give: posting_id
                 },
                 success: function (response) {
                     alert(response["msg"])
@@ -45,51 +47,50 @@
             })
         }
 
+        {#function comment_listing() {#}
+        {##}
+        {#    $.ajax({#}
+        {#        type: "GET",#}
+        {#        url: "/get_comment",#}
+        {#        data: {},#}
+        {#        success: function (response) {#}
+        {#            let reviews = response['all_review']#}
+        {#            for (let i = 0; i < reviews.length; i++) {#}
+        {##}
+        {#                let username = reviews[i]['username']#}
+        {#                let comment = reviews[i]['comment']#}
+        {#                let temp_html = `#}
+        {#    <div class="section">#}
+        {#        <div id="nickname-box" class="container">#}
+        {#            <p>${username}</p>#}
+        {#            <div id="comment-box" class="media-content">#}
+        {#                <div class="review-a">#}
+        {#                    <p>${comment}</p>#}
+        {#                    <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+        {#    `#}
+        {#                $('#box-review-making-box').append(temp_html)#}
+        {#            }#}
+        {#        }#}
+        {#    })#}
 
 
-        function comment_listing() {
-            $.ajax({
-                type: "GET",
-                url: "/get_comment",
-                data: {},
-                success: function (response) {
-                    let reviews = response['all_review']
-                    for (let i = 0; i < reviews.length; i++) {
+        {#function comment_delete(comment) {#}
+        {#    console.log(comment)#}
+        {#    $.ajax({#}
+        {#            type: "POST",#}
+        {#            url: "/comment/delete",#}
+        {#            data: {comment_give: comment},#}
+        {#            success: function (response) {#}
+        {#                alert(response['msg'])#}
+        {#            }#}
+        {#        }#}
+        {#    )#}
 
-                        let username = reviews[i]['username']
-                        let comment = reviews[i]['comment']
-                        let temp_html = `
-            <div class="section">
-                <div id="nickname-box" class="container">
-                    <p>${username}</p>
-                    <div id="comment-box" class="media-content">
-                        <div class="review-a">
-                            <p>${comment}</p>
-                            <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            `
-                        $('#box-review-making-box').append(temp_html)
-                    }
-                }
-            })
-        }
 
-        function comment_delete(comment) {
-            console.log(comment)
-            $.ajax({
-                    type: "POST",
-                    url: "/comment/delete",
-                    data: {comment_give: comment},
-                    success: function (response) {
-                        alert(response['msg'])
-                    }
-                }
-            )
-        }
-
-                function toggle_like(_id) {
+        function toggle_like(_id) {
             $.ajax({
                 type: "POST",
                 url: "/update_like",
@@ -102,14 +103,15 @@
                 }
             });
         }
-        function deletefood(_id,writer) {
-                        $.ajax({
+
+        function deletefood(_id, writer) {
+            $.ajax({
                 type: "POST",
                 url: "/postfood/delete",
-                data: {_id_give: _id, writer_give:writer},
+                data: {_id_give: _id, writer_give: writer},
                 success: function (response) {
                     alert(response["msg"])
-                          window.location.replace('/')
+                    window.location.replace('/')
 
 
                 }
@@ -166,7 +168,8 @@
               <i class="fa fa-heart"></i>
             </span>
                 </a>
-                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')" class="card-footer-item has-text-danger">
+                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')"
+                   class="card-footer-item has-text-danger">
                     삭제
                     <span class="icon">
               <i class="fa fa-ban"></i>
@@ -175,18 +178,10 @@
             </footer>
         </div>
     </div>
+
     <!--유저들 리뷰출력 및 코멘트작성-->
     <div class="box review-making-box" id="box-review-making-box">
-        <div class="section">
-            <div id="nickname-box" class="container">
-                <p>{{ nick }}</p>
-                <div id="comment-box" class="media-content">
-                    <div class="review-a">
-                        <p>{{ comment }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div class="field">
             <label class="label review-box">＃코멘트 쓰기</label>
             <div class="control">
@@ -195,10 +190,19 @@
         </div>
         <div class="field is-grouped">
             <div class="control" style="margin: auto">
-                <button id="review-box" onclick="comment()" class="nav-item button is-info">저장하기</button>
+                <button id="review-box" onclick="comment('{{ food._id }}')" class="nav-item button is-info">저장하기
+                </button>
+            </div>
+        </div>
+        <div class="section">
+            <div id="nickname-box" class="container">
+                {% for comment in food.comments %}
+                      <p>{{ comment.comment }}</p>
+                    <p>{{ comment.username }}</p>
+                    <button type="button" class="btn btn-primary">삭제</button>
+                {% endfor %}
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>
