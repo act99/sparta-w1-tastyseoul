@@ -1,18 +1,13 @@
-.carousel-item > img {
-    height: 500px;
-    object-fit: cover;
-}
 
 .card-columns {
-    margin: 0px 200px;
+    margin: 0px 300px;
 }
 
-.carousel-control-prev {
-    border: 0;
+.main-img {
+    margin-top: 3%;
+    height: 400px;
+    width: 100%;
+    background-image: url("https://src.hidoc.co.kr/image/lib/2020/10/14/1602663615388_0.jpg");
+    display: flex;
 }
-
-.carousel-control-next {
-    border: 0;
-}
-
 

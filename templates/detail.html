@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>테이스티서울</title>
-
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <!-- Font Awesome CSS -->
@@ -21,18 +18,102 @@
     <!--Bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
-
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
     <meta property="og:image" content=""/>
-
     <script>
+        $(document).ready(function () {
+            $('#box review-making-box').empty()
+            comment_listing()
+        })
+
+        function comment() {
+            let comment = $("#comment-post").val()
+            console.log(comment)
+            $.ajax({
+                type: "POST",
+                url: "/comment",
+                data: {
+                    comment_give: comment,
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            })
+        }
 
 
-        {#로그아웃 버튼 동작#}
+
+        function comment_listing() {
+            $.ajax({
+                type: "GET",
+                url: "/get_comment",
+                data: {},
+                success: function (response) {
+                    let reviews = response['all_review']
+                    for (let i = 0; i < reviews.length; i++) {
+
+                        let username = reviews[i]['username']
+                        let comment = reviews[i]['comment']
+                        let temp_html = `
+            <div class="section">
+                <div id="nickname-box" class="container">
+                    <p>${username}</p>
+                    <div id="comment-box" class="media-content">
+                        <div class="review-a">
+                            <p>${comment}</p>
+                            <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            `
+                        $('#box-review-making-box').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function comment_delete(comment) {
+            console.log(comment)
+            $.ajax({
+                    type: "POST",
+                    url: "/comment/delete",
+                    data: {comment_give: comment},
+                    success: function (response) {
+                        alert(response['msg'])
+                    }
+                }
+            )
+        }
+
+                function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+
+
+                }
+            });
+        }
+        function deletefood(_id,writer) {
+                        $.ajax({
+                type: "POST",
+                url: "/postfood/delete",
+                data: {_id_give: _id, writer_give:writer},
+                success: function (response) {
+                    alert(response["msg"])
+                          window.location.replace('/')
+
+
+                }
+            });
+
+        }
 
         function sign_out() {
             $.removeCookie('mytoken')
@@ -40,19 +121,17 @@
             alert('로그아웃!')
             window.location.href = "/login"
         }
-
     </script>
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand" style=>
-        <a class="navbar-item" href="/" style="margin-left: 60px; margin-right: 1520px;">
-            <img src="url_for('static', filename='logo_tastySeoul.png')">
+        <a class="navbar-item" href="/" style="margin-left: 30px;"">
+            <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
             <strong class="logoText"
-                    style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
+                    style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
         </a>
-        <div>
+        <div style="float: right; margin-right: 30px;">
             <button class="nav-item button is-info is-light"
                     style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
                     onclick="location.href='/login'" id="sign-in">Login
@@ -64,6 +143,13 @@
         </div>
     </div>
 </nav>
+
+
+
+
+
+
+
 <!--맛집 게시물 출력-->
 <div class="wrap" style="width: 600px; height: auto; margin: auto">
     <div id="foodcard" style="margin-top: 100px;">
@@ -72,20 +158,19 @@
                  class="card-img-top"
                  alt="테스트">
             <div class="card-body" style="margin: 10px;">
-                <h1 class="card-title">{{ name }}</h1>
-                <h5 class="card-text">{{ location }}</h5>
+                <h1 class="card-title">{{ food.name }}</h1>
+                <h5 class="card-text">{{ food.location }}</h5>
                 <br>
-                <label style="margin-bottom: 10px;"><b>#맛집 리뷰</b></label>
-                <p class="card-text">{{ description }}</p>
+                <label style="margin-bottom: 10px;"><b>{{ food.comment }}</b></label>
             </div>
             <footer class="card-footer" style="font-size: 20px;">
-                <a href="#" onclick="likeFood()" class="card-footer-item has-text-info">
-                    좋아요
+                <a onclick="toggle_like('{{ food._id }}')" class="card-footer-item has-text-info">
+                    좋아요 {{ food.likes }}
                     <span class="icon">
               <i class="fa fa-heart"></i>
             </span>
-                </a >
-                <a href="#" onclick="deletefood()" class="card-footer-item has-text-danger">
+                </a>
+                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')" class="card-footer-item has-text-danger">
                     삭제
                     <span class="icon">
               <i class="fa fa-ban"></i>
@@ -95,7 +180,7 @@
         </div>
     </div>
     <!--유저들 리뷰출력 및 코멘트작성-->
-    <div class="box review-making-box">
+    <div class="box review-making-box" id="box-review-making-box">
         <div class="section">
             <div id="nickname-box" class="container">
                 <p>{{ nick }}</p>
@@ -109,12 +194,12 @@
         <div class="field">
             <label class="label review-box">＃코멘트 쓰기</label>
             <div class="control">
-                <textarea class="textarea" id="textarea-post" placeholder="이 맛집에 대한 코멘트를 남겨주세요!"></textarea>
+                <textarea class="textarea" id="comment-post" placeholder="이 맛집에 대한 코멘트를 남겨주세요!"></textarea>
             </div>
         </div>
         <div class="field is-grouped">
             <div class="control" style="margin: auto">
-                <button id="review-box" onclick="posting()" class="nav-item button is-info">저장하기</button>
+                <button id="review-box" onclick="comment()" class="nav-item button is-info">저장하기</button>
             </div>
         </div>
     </div>
