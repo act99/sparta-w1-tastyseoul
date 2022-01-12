@@ -23,6 +23,36 @@
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
     <meta property="og:image" content=""/>
+    <title>테이스티서울</title>
+    <style>
+        a:link {
+            text-decoration: none;
+        }
+
+        a:visited {
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: blue;
+            text-decoration: none;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0px;
+        }
+
+        .container {
+            margin-bottom: 20px;
+        }
+
+
+        .container {
+            margin-bottom: 20px;
+        }
+
+    </style>
     <script>
         $(document).ready(function () {
             $('#box review-making-box').empty()
@@ -46,48 +76,17 @@
             })
         }
 
-        {#function comment_listing() {#}
-        {##}
-        {#    $.ajax({#}
-        {#        type: "GET",#}
-        {#        url: "/get_comment",#}
-        {#        data: {},#}
-        {#        success: function (response) {#}
-        {#            let reviews = response['all_review']#}
-        {#            for (let i = 0; i < reviews.length; i++) {#}
-        {##}
-        {#                let username = reviews[i]['username']#}
-        {#                let comment = reviews[i]['comment']#}
-        {#                let temp_html = `#}
-        {#    <div class="section">#}
-        {#        <div id="nickname-box" class="container">#}
-        {#            <p>${username}</p>#}
-        {#            <div id="comment-box" class="media-content">#}
-        {#                <div class="review-a">#}
-        {#                    <p>${comment}</p>#}
-        {#                    <button type="button" onclick="comment_delete('${comment}')" class="btn btn-primary">삭제</button>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
-        {#    `#}
-        {#                $('#box-review-making-box').append(temp_html)#}
-        {#            }#}
-        {#        }#}
-        {#    })#}
-
-
-        {#function comment_delete(comment) {#}
-        {#    console.log(comment)#}
-        {#    $.ajax({#}
-        {#            type: "POST",#}
-        {#            url: "/comment/delete",#}
-        {#            data: {comment_give: comment},#}
-        {#            success: function (response) {#}
-        {#                alert(response['msg'])#}
-        {#            }#}
-        {#        }#}
-        {#    )#}
-
+        function comment_delete(posting_id, comment_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
 
         function toggle_like(_id) {
             $.ajax({
@@ -111,35 +110,28 @@
                     window.location.replace('/')
                 }
             });
-
         }
-
         function sign_out() {
-            $.removeCookie('mytoken')
-            $.removeCookie('mytoken', {path: '/'});
-            alert('로그아웃!')
-            window.location.href = "/login"
+            document.cookie = "mytoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            alert('로그아웃')
+            window.location.replace("/login")
         }
     </script>
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand" style=>
-        <a class="navbar-item" href="/" style="margin-left: 60px; margin-right: 1520px;">
-            <strong class="logoText"
-                    style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
-        </a>
-        <div>
-            <button class="nav-item button is-info is-light"
-                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                    onclick="location.href='/login'" id="sign-in">Login
-            </button>
-            <button class="nav-item button is-info is-light"
-                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                    onclick="sign_out()" id="logout">logout
-            </button>
-        </div>
+    <a class="navbar-item" href="/" style="margin-left: 30px;">
+    <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+    <strong class="logoText"
+            style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+    </a>
+    <div style="float: right; margin-right: 30px;">
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="sign_out()" id="logout">logout
+        </button>
+    </div>
     </div>
 </nav>
 <!--맛집 게시물 출력-->
@@ -189,11 +181,11 @@
             </div>
         </div>
         <div class="section">
-            <div id="nickname-box" class="container">
+            <div id="nickname-box" class="media-content">
                 {% for comment in food.comments %}
-                      <p>{{ comment.comment }}</p>
+                    <p>{{ comment.comment }}</p>
                     <p>{{ comment.username }}</p>
-                    <button type="button" class="btn btn-primary">삭제</button>
+                    <button type="button" class="btn btn-primary" onclick="comment_delete()">삭제</button>
                 {% endfor %}
             </div>
         </div>
