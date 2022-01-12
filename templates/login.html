@@ -21,12 +21,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
     <!-- style.css 파일을 같은 폴더에 만들고, head 태그에서 불러오기 -->
-    <link rel="stylesheet" type="text/css" href = "/static/loginstyle.css">
+    <link rel="stylesheet" type="text/css" href="/static/loginstyle.css">
 
     <script>
         // {% if msg %}
-        //     alert("{{ msg }}")
-        // {% endif %}
+            //     alert("{{ msg }}")
+            // {% endif %}
         function sign_in() {
             let username = $("#input-username").val()
             let password = $("#input-password").val()
@@ -176,34 +176,33 @@
     <style>
 
 
-
-
-
     </style>
 </head>
 <body>
 
-<div class="body">
+<div>
     <section class="hero is-white">
         <div class="Tasty_Seoul">
             <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
             </nav>
         </div>
     </section>
-    <section class="section" >
+    <section class="section">
         <div class="container">
             <div class="box">
                 <article class="media">
                     <div class="media-content">
                         <div class="content">
-                            <div class="navbar-item" href="/" >
-                                <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}" style="
-  object-fit: cover; position: relative; left: 32px; top: 21px;">
+                            <div style=" margin-bottom: 50px">
 
-                            </div>
 
-                            <div class="logoText">
-                                TASTYSEOUL
+                                <div class="logoText" style="font-size: 48px; color: #ff9583; margin-top: 50px">
+                                    TASTYSEOUL
+                                </div>
+                                                                <div>
+                                    <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}" style=" display: block;
+  object-fit: cover; margin: 90px auto; width: 180px; height: 180px;">
+                                </div>
                             </div>
                             <div class="field has-addons">
 
