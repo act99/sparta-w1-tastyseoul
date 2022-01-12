@@ -141,6 +141,11 @@
                 }
             }
         }
+        function sign_out() {
+            document.cookie = "mytoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            alert('로그아웃')
+            window.location.replace("/login")
+        }
         function move_profile() {
 
         }
@@ -149,129 +154,130 @@
 
 <body>
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-        <a class="navbar-item" href="/" style="margin-left: 30px;">
-            <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
-            <strong class="logoText"
-                    style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
-        </a>
-        <div style="float: right; margin-right: 30px;">
-            <button class="nav-item button is-info is-light"
-                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                    onclick="location.href='/login'" id="sign-in">Login
-            </button>
-            <button class="nav-item button is-info is-light"
-                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
-                    onclick="sign_out()" id="logout">logout
-            </button>
-        </div>
+    <a class="navbar-item" href="/" style="margin-left: 30px;">
+        <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+        <strong class="logoText"
+                style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+    </a>
+    <div style="float: right; margin-right: 30px;">
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="location.href='/login'" id="sign-in">Login
+        </button>
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="sign_out()" id="logout">logout
+        </button>
+    </div>
     </div>
 </nav>
-<div class="main-img">
-    <div class="h1-box">
-        <h1>Tasty Seoul</h1>
-        <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
-               placeholder="맛집 장소를 검색해주세요"
-               onclick='$("#modal-post").addClass("is-active")'></p>
+<div class="wrap">
+    <div class="main-img">
+        <div class="h1-box">
+            <h1>Tasty Seoul</h1>
+            <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
+                   placeholder="맛집 장소를 검색해주세요"
+                   onclick='$("#modal-post").addClass("is-active")'></p>
+        </div>
+
     </div>
 
-</div>
+
+    {#<label for="site-search"></label>#}
+    {#<section class="section search-section">#}
+    {#    <article class="media">#}
+    {#        <div class="media-content">#}
+    {#            <div class="field">#}
+    {#                <p class="control">#}
+    {#                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"#}
+    {#                           onclick='$("#modal-post").addClass("is-active")'></p>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </article>#}
+    {#</section>#}
 
 
-{#<label for="site-search"></label>#}
-{#<section class="section search-section">#}
-{#    <article class="media">#}
-{#        <div class="media-content">#}
-{#            <div class="field">#}
-{#                <p class="control">#}
-{#                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"#}
-{#                           onclick='$("#modal-post").addClass("is-active")'></p>#}
-{#            </div>#}
-{#        </div>#}
-{#    </article>#}
-{#</section>#}
-
-
-
-<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
-   onclick='$("#modal-edit").addClass("is-active")'>
-    맛집 추천하기😎<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
-</a>
+    <a class="button level-item has-text-centered" aria-label="edit"
+       style="width: 200px; margin: auto; margin-top: 30px;"
+       onclick='$("#modal-edit").addClass("is-active")'>
+        맛집 추천하기😎<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+    </a>
 
 
     <div class="card-box" id="cards-box">
     </div>
 
-<div class="modal" id="modal-edit">
-    <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
-    <div class="modal-content review-box">
-        <div class="box">
-            <article class="media">
-                <div class="media-content">
-                    <div class="field">
-                        <label class="label" for="name">#맛집 이름</label>
+    <div class="modal" id="modal-edit">
+        <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
+        <div class="modal-content review-box">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="field">
+                            <label class="label" for="name">#맛집 이름</label>
 
-                        <p class="control">
-                            <input id="foodname" class="input" placeholder="이 맛집의 이름은?">
-                        </p>
-                    </div>
-                    <div class="field">
-                        <label class="label" for="name">#맛집 위치</label>
+                            <p class="control">
+                                <input id="foodname" class="input" placeholder="이 맛집의 이름은?">
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="name">#맛집 위치</label>
 
-                        <p class="control">
-                            <input id="foodlocation" class="input" placeholder="이 맛집의 위치는?">
-                        </p>
-                    </div>
-                    <div class="field">
-                        <label class="label" for="input-pic">#맛집 사진</label>
+                            <p class="control">
+                                <input id="foodlocation" class="input" placeholder="이 맛집의 위치는?">
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="input-pic">#맛집 사진</label>
 
-                        <div class="control is-expanded">
-                            <div class="file has-name">
-                                <label class="file-label" style="width:100%">
-                                    <input id="file" class="file-input" type="file"
-                                           name="resume">
-                                    <span class="file-cta"><span class="file-icon"><i
-                                            class="fa fa-upload"></i></span>
+                            <div class="control is-expanded">
+                                <div class="file has-name">
+                                    <label class="file-label" style="width:100%">
+                                        <input id="file" class="file-input" type="file"
+                                               name="resume">
+                                        <span class="file-cta"><span class="file-icon"><i
+                                                class="fa fa-upload"></i></span>
                                 <span class="file-label">파일 선택</span>
                             </span>
-                                    <span id="file-name" class="file-name"
-                                          style="width:100%;max-width:100%"></span>
-                                </label>
+                                        <span id="file-name" class="file-name"
+                                              style="width:100%;max-width:100%"></span>
+                                    </label>
+                                </div>
+
                             </div>
-
                         </div>
-                    </div>
-                    <div class="field">
-                        <label class="label" for="textarea-about">#맛집 리뷰</label>
+                        <div class="field">
+                            <label class="label" for="textarea-about">#맛집 리뷰</label>
 
-                        <p class="control">
+                            <p class="control">
 
                         <textarea id="foodcomment" class="textarea"
                                   placeholder="간단한 맛집 리뷰를 해주세요!"></textarea>
-                        </p>
+                            </p>
+                        </div>
+                        <nav class="level is-mobile">
+                            <div class="level-left">
+
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <a class="button is-gogo" onclick="posting()">작성하기
+                                    </a>
+                                </div>
+                                <div class="level-item">
+                                    <a class="button is-gogo is-outlined"
+                                       onclick='$("#modal-edit").removeClass("is-active")'>취소</a>
+                                </div>
+                            </div>
+                        </nav>
                     </div>
-                    <nav class="level is-mobile">
-                        <div class="level-left">
-
-                        </div>
-                        <div class="level-right">
-                            <div class="level-item">
-                                <a class="button is-gogo" onclick="posting()">작성하기
-                                </a>
-                            </div>
-                            <div class="level-item">
-                                <a class="button is-gogo is-outlined"
-                                   onclick='$("#modal-edit").removeClass("is-active")'>취소</a>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-            </article>
+                </article>
+            </div>
         </div>
+        <button class="modal-close is-large" aria-label="close"
+                onclick='$("#modal-edit").removeClass("is-active")'></button>
     </div>
-    <button class="modal-close is-large" aria-label="close"
-            onclick='$("#modal-edit").removeClass("is-active")'></button>
 </div>
-
 </body>
 
 </html>
