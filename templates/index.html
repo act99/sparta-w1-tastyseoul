@@ -8,11 +8,10 @@
 
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -23,12 +22,15 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-
+    {#    fontawesome#}
+    <!-- ... -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+    />
+    <!-- ... -->
     <title>Title</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-
-    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
-
+    
 
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
@@ -44,6 +46,20 @@
             display: flex;
         }
 
+        .write-button {
+            float: right;
+            margin-top: 10px;
+        }
+
+        .search-box {
+            text-align: center;
+            margin-top: 40px;
+
+        }
+
+        .search {
+            width: 500px;
+        }
 
         .card-columns {
             margin-top: 30px;
@@ -59,6 +75,11 @@
     </style>
 
     <script>
+        function toggle_like(post_id, type) {
+            console.log(post_id, type)
+
+        }
+
         $(document).ready(function () {
             $('#cards-box').empty()
             listing()
@@ -92,6 +113,7 @@
                 }
             });
         }
+
         function listing() {
             $.ajax({
                 type: "GET",
@@ -100,14 +122,13 @@
                 success: function (response) {
                     let reviews = response['all_review']
                     for (let i = 0; i < reviews.length; i++) {
+                        let _id = reviews[i]['_id']
                         let name = reviews[i]['name']
                         let location = reviews[i]['location']
                         let file = reviews[i]['file']
                         let writer = reviews[i]['profile_name']
-
-                        let temp_html = `<div class="card-columns">
-                                            <div class="card-box">
-                                                <div class="card" href="#">
+                        let temp_html = `
+                                                <div class="card" href="#" id="${_id}">
                                                     <figure class="image is-4by3">
                                                          <img src="../static/${file}" class="card-img-top" alt=${name}>
                                                         </figure>
@@ -115,13 +136,12 @@
                                                         <h5 class="card-title">${name}</h5>
                                                         <p class="card-text">${location}</p>
                                                         <p class="card-text">작성자: ${writer}</p>
-                                                        <button type="button" class="btn btn-primary">좋아요 👍</button>
-                                                        <span>0</span>
+                                                        <a class="btn" aria-label="heart" onclick="toggle_like(${_id},'heart')">
+                                                        <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                                        &nbsp;<span class="like-num">2.7k</span>
+                                                        <span>0</span></a>
                                                     </div>
-                                                </div>
-                                            </div>
                                         </div>`
-
                         $('#cards-box').append(temp_html)
                     }
                 }
@@ -159,7 +179,8 @@
 
 </div>
 
-<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;" onclick='$("#modal-edit").addClass("is-active")'>
+<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
+   onclick='$("#modal-edit").addClass("is-active")'>
     게시물 작성하기<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
 </a>
 
@@ -169,27 +190,17 @@
         <div class="media-content">
             <div class="field">
                 <p class="control">
-                    <input id="input-post" class="input is-rounded" onkeyup="filter()" placeholder="맛집 장소를 검색해주세요"
+                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
                            onclick='$("#modal-post").addClass("is-active")'></p>
             </div>
         </div>
+
     </article>
 </section>
 
 
-<div class="card-columns" id="cards-box">
-    <div class="card-box">
-        <div class="card" href="#">
-            <img class="card-img-top" src="{{ file }}"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">{{ name }}</h5>
-                <p class="card-text">{{ location }}</p>
-                <p class="card-text">{{ location }}</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
+<div class="card-columns">
+    <div class="card-box" id="cards-box">
     </div>
 </div>
 <div class="modal" id="modal-edit">
