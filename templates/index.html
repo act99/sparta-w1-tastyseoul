@@ -5,14 +5,17 @@
 
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -22,54 +25,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    {#    fontawesome#}
-    <!-- ... -->
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
-    />
-    <!-- ... -->
-    <title>Title</title>
+
+    <title>테이스티서울</title>
+
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
     <meta property="og:title" content="테이스티 서울"/>
-    <meta property="og:description" content="테이스티 서울"/>
+    <meta property="og:description" content="서울의 맛집을 한눈에"/>
     <meta property="og:image" content=""/>
 
     <!--css-->
-
     <style>
-        .main-img {
-            height: 200px;
-            width: 100%;
-            background-color: cadetblue;
-            display: flex;
-        }
-
-        .write-button {
-            float: right;
-            margin-top: 10px;
-        }
-
-        .search-box {
-            text-align: center;
-            margin-top: 40px;
-
-        }
-
-        .search {
-            width: 500px;
-        }
-
-        .card-columns {
-            margin-top: 30px;
-        }
-
-        .h1-box {
-            display: flex;
-            margin: auto;
-            align-items: center;
-
-
-        }
     </style>
 
     <script>
@@ -176,45 +141,69 @@
                 }
             }
         }
+        function move_profile() {
+
+        }
     </script>
 </head>
 
 <body>
+<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
+        <a class="navbar-item" href="/" style="margin-left: 30px;">
+            <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+            <strong class="logoText"
+                    style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+        </a>
+        <div style="float: right; margin-right: 30px;">
+            <button class="nav-item button is-info is-light"
+                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                    onclick="location.href='/login'" id="sign-in">Login
+            </button>
+            <button class="nav-item button is-info is-light"
+                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                    onclick="sign_out()" id="logout">logout
+            </button>
+        </div>
+    </div>
+</nav>
 <div class="main-img">
     <div class="h1-box">
         <h1>Tasty Seoul</h1>
+        <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
+               placeholder="맛집 장소를 검색해주세요"
+               onclick='$("#modal-post").addClass("is-active")'></p>
     </div>
 
 </div>
+
+
+{#<label for="site-search"></label>#}
+{#<section class="section search-section">#}
+{#    <article class="media">#}
+{#        <div class="media-content">#}
+{#            <div class="field">#}
+{#                <p class="control">#}
+{#                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"#}
+{#                           onclick='$("#modal-post").addClass("is-active")'></p>#}
+{#            </div>#}
+{#        </div>#}
+{#    </article>#}
+{#</section>#}
+
 
 
 <a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
    onclick='$("#modal-edit").addClass("is-active")'>
-    게시물 작성하기<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+    맛집 추천하기😎<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
 </a>
 
-<label for="site-search"></label>
-<section class="section">
-    <article class="media">
-        <div class="media-content">
-            <div class="field">
-                <p class="control">
-                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
-                           onclick='$("#modal-post").addClass("is-active")'></p>
-            </div>
-        </div>
-        <button class="button is-link is-light is-rounded"><b>검색</b></button>
-    </article>
-</section>
 
-
-<div class="card-columns">
     <div class="card-box" id="cards-box">
     </div>
-</div>
+
 <div class="modal" id="modal-edit">
     <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
-    <div class="modal-content">
+    <div class="modal-content review-box">
         <div class="box">
             <article class="media">
                 <div class="media-content">
