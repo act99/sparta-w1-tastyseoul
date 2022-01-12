@@ -26,7 +26,6 @@
     <script>
         $(document).ready(function () {
             $('#box review-making-box').empty()
-            comment_listing()
         })
 
         function comment(postingId) {
@@ -98,8 +97,6 @@
                 success: function (response) {
                     alert(response["msg"])
                     window.location.reload()
-
-
                 }
             });
         }
@@ -112,8 +109,6 @@
                 success: function (response) {
                     alert(response["msg"])
                     window.location.replace('/')
-
-
                 }
             });
 
@@ -132,7 +127,6 @@
 <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
     <div class="navbar-brand" style=>
         <a class="navbar-item" href="/" style="margin-left: 60px; margin-right: 1520px;">
-            <img src="url_for('static', filename='logo_tastySeoul.png')">
             <strong class="logoText"
                     style="font-family: 'Do Hyeon', sans-serif; font-size: larger;">TASTYSEOUL</strong>
         </a>
@@ -152,7 +146,7 @@
 <div class="wrap" style="width: 600px; height: auto; margin: auto">
     <div id="foodcard" style="margin-top: 100px;">
         <div class="card mb-3">
-            <img src="{{ img_file }}"
+            <img src="../static/{{ food.file }}"
                  class="card-img-top"
                  alt="테스트">
             <div class="card-body" style="margin: 10px;">
@@ -204,5 +198,6 @@
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
