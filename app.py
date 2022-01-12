@@ -104,6 +104,7 @@ def sign_up():
         "username": username_receive,                               # 아이디
         "password": password_hash,                                  # 비밀번호
         "profile_name": profile_name_receive,                           # 프로필 이름 기본값은 아이디
+        'likelist': []
         # "profile_pic": "",                                          # 프로필 사진 파일 이름
         # "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
         # "profile_info": ""                                          # 프로필 한 마디
@@ -164,29 +165,29 @@ def check_dup():
 #         return redirect(url_for("home"))
 
 
-@app.route('/update_like', methods=['POST'])
-def update_like():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        # 좋아요 수 변경
-        user_info = db.users.find_one({"username": payload["id"]})
-        post_id_receive = request.form["post_id_give"]
-        type_receive = request.form["type_give"]
-        action_receive = request.form["action_give"]
-        doc = {
-            "post_id": post_id_receive,
-            "username": user_info["username"],
-            "type": type_receive
-        }
-        if action_receive == "like":
-            db.likes.insert_one(doc)
-        else:
-            db.likes.delete_one(doc)
-        count = db.likes.count_documents({"post_id": post_id_receive, "type": type_receive})
-        return jsonify({"result": "success", 'msg': 'updated', "count": count})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
+# @app.route('/update_like', methods=['POST'])
+# def update_like():
+#     token_receive = request.cookies.get('mytoken')
+#     try:
+#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+#         # 좋아요 수 변경
+#         user_info = db.users.find_one({"username": payload["id"]})
+#         post_id_receive = request.form["post_id_give"]
+#         type_receive = request.form["type_give"]
+#         action_receive = request.form["action_give"]
+#         doc = {
+#             "post_id": post_id_receive,
+#             "username": user_info["username"],
+#             "type": type_receive
+#         }
+#         if action_receive == "like":
+#             db.likes.insert_one(doc)
+#         else:
+#             db.likes.delete_one(doc)
+#         count = db.likes.count_documents({"post_id": post_id_receive, "type": type_receive})
+#         return jsonify({"result": "success", 'msg': 'updated', "count": count})
+#     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+#         return redirect(url_for("home"))
 
 
 
@@ -206,13 +207,15 @@ def save_post():
         filename = f'file-{mytime}'
         save_to = f'static/{filename}.{extention}'
         file.save(save_to)
+        likes = 0
         doc = {
             "username": user_info["username"],
             "profile_name": user_info["profile_name"],
             'name': name_receive,
             'location': location_receive,
             'comment': comment_receive,
-            'file': f'{filename}.{extention}'
+            'file': f'{filename}.{extention}',
+            'likes': likes
         }
 
         db.foodlist.insert_one(doc);
@@ -236,6 +239,7 @@ def show_post():
             file = result['file']
             username = result['username']
             profile_name = result['profile_name']
+            likes = result['likes']
             doc = {
                 "_id": _id,
                 "name": name,
@@ -243,13 +247,39 @@ def show_post():
                 "comment": comment,
                 "file": file,
                 "username": username,
-                "profile_name": profile_name
+                "profile_name": profile_name,
+                'likes':likes
             }
             reviews.append(doc)
         # 포스팅 목록 받아오기
         return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
+
+# 좋아요 기능 구현
+@app.route("/update_like", methods=['POST'])
+def update_like():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        _id_receive = request.form["_id_give"]
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        # 여기는 유저db에 내가 좋아요를 눌렀는지 안눌렀는지 확인하고 그 값을 저장하는 코드
+        user_info = db.users.find_one({"username": payload["id"]})
+        username = user_info['username']
+        if _id_receive not in db.users.find_one({'username':username})['likelist']:
+            db.users.update_one({'username': username}, {'$push': {'likelist': _id_receive}})
+            likes = db.foodlist.find_one({'_id': ObjectId(_id_receive)}, {})['likes']
+            db.foodlist.update_one({'_id': ObjectId(_id_receive)}, {'$set': {'likes': likes + 1}})
+            return jsonify({"result": "success", "msg": "좋아요!"})
+        else:
+            db.users.update_one({'username': username}, {'$pull': {'likelist': _id_receive}})
+            likes = db.foodlist.find_one({'_id': ObjectId(_id_receive)}, {})['likes']
+            db.foodlist.update_one({'_id': ObjectId(_id_receive)}, {'$set': {'likes': likes - 1}})
+            return jsonify({"result": "success", "msg": "좋아요 취소!"})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 
 #코멘트
@@ -306,6 +336,20 @@ def comment_delete():
 
     # db.comments.delete_one({}, {'username': False})
 
+
+@app.route("/postfood/delete", methods=['POST'])
+def post_delete():
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    _id_receive = request.form["_id_give"]
+    writer_receive = request.form["writer_give"]
+    writer = db.foodlist.find_one({"_id":ObjectId(_id_receive), "username":writer_receive}, {})['username']
+    if writer == payload['id']:
+        db.foodlist.delete_one({"_id":ObjectId(_id_receive)}, {})
+        return jsonify({"result": "success", 'msg': '글 삭제 완료'})
+    else:
+        return jsonify({"result": "failed", 'msg': '본인 글이 아니라 삭제가 불가능합니다.'})
+    
 
 
 

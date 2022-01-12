@@ -45,6 +45,8 @@
             })
         }
 
+
+
         function comment_listing() {
             $.ajax({
                 type: "GET",
@@ -85,6 +87,34 @@
                     }
                 }
             )
+        }
+
+                function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+
+
+                }
+            });
+        }
+        function deletefood(_id,writer) {
+                        $.ajax({
+                type: "POST",
+                url: "/postfood/delete",
+                data: {_id_give: _id, writer_give:writer},
+                success: function (response) {
+                    alert(response["msg"])
+                          window.location.replace('/')
+
+
+                }
+            });
+
         }
 
         function sign_out() {
@@ -128,16 +158,15 @@
                 <h5 class="card-text">{{ food.location }}</h5>
                 <br>
                 <label style="margin-bottom: 10px;"><b>{{ food.comment }}</b></label>
-                <p class="card-text">{{ description }}</p>
             </div>
             <footer class="card-footer" style="font-size: 20px;">
-                <a href="#" onclick="likeFood()" class="card-footer-item has-text-info">
-                    좋아요
+                <a onclick="toggle_like('{{ food._id }}')" class="card-footer-item has-text-info">
+                    좋아요 {{ food.likes }}
                     <span class="icon">
               <i class="fa fa-heart"></i>
             </span>
                 </a>
-                <a href="#" onclick="deletefood()" class="card-footer-item has-text-danger">
+                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')" class="card-footer-item has-text-danger">
                     삭제
                     <span class="icon">
               <i class="fa fa-ban"></i>

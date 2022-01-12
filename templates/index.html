@@ -73,10 +73,7 @@
     </style>
 
     <script>
-        function toggle_like(hihi) {
-            console.log(hihi)
 
-        }
 
         $(document).ready(function () {
             $('#cards-box').empty()
@@ -111,6 +108,7 @@
                 }
             });
         }
+
         function listing() {
             $.ajax({
                 type: "GET",
@@ -124,18 +122,19 @@
                         let location = reviews[i]['location']
                         let file = reviews[i]['file']
                         let writer = reviews[i]['profile_name']
+                        let likes = reviews[i]['likes']
                         let temp_html = `
-                            <div class="card" style="cursor: pointer" id="${_id}" onclick="window.location.href='/detail/${_id}'">
-                                <figure class="image is-4by3">
+                            <div class="card" id="${_id}" >
+                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/${_id}'">
                                      <img src="../static/${file}" class="card-img-top" alt=${name}>
                                     </figure>
-                                <div class="card-body">
+                                <div class="card-body" >
                                     <h5 class="card-title">${name}</h5>
                                     <p class="card-text">${location}</p>
                                     <p class="card-text">작성자: ${writer}</p>
-                                    <a class="btn" aria-label="heart" onclick="toggle_like("hi")">
+                                    <a class="btn" aria-label="heart" onclick="toggle_like('${_id}')">
                                     <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
-                                    &nbsp;<span class="like-num">2.7k</span>
+                                    &nbsp;<span class="like-num">${likes}</span>
                                     <span>0</span></a>
                                 </div>
                             </div>`
@@ -144,7 +143,23 @@
                 }
             })
         }
+
+        function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id.toString()},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+
+
+                }
+            });
+        }
+
         {#검색기능구현#}
+
         function filter() {
             let search = document.getElementById("input-post").value.toLowerCase();
             let card = document.getElementsByClassName("card");
@@ -171,28 +186,6 @@
     </div>
 
 </div>
-
-
-{#테스트용#}
-<section class="section">
-    <article class="media">
-        <figure class="media-left" style="align-self: center">
-            <a class="image is-32x32" href="#">
-                <img class="is-rounded" src="{{ url_for("static", filename="profile_pics/profile_placeholder.png") }}">
-            </a>
-        </figure>
-        <div class="media-content">
-            <div class="field">
-                <p class="control">
-	                  <input id="input-post" class="input is-rounded" placeholder="무슨 생각을 하고 계신가요?"
-	                         onclick='$("#modal-post").addClass("is-active")'>                </p>
-            </div>
-        </div>
-    </article>
-</section>
-{#테스트용#}
-
-
 
 
 <a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
