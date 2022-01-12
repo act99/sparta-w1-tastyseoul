@@ -1,3 +1,4 @@
+from bson import ObjectId
 from pymongo import MongoClient
 import jwt
 import datetime
@@ -35,10 +36,19 @@ def home():
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 # 디테일
-@app.route('/detail')
-def detail():
-    msg = request.args.get("msg")
-    return render_template('detail.html')
+@app.route('/detail/<id>')
+def detail(id):
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
+        food_info = db.foodlist.find_one({'_id': ObjectId(id)})
+        print(food_info)
+        return render_template("detail.html", user_info=user_info, food=food_info)
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 # 로그인 & 회원가입
 @app.route('/login')
@@ -109,49 +119,49 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
+#
+# @app.route('/update_profile', methods=['POST'])
+# def save_img():
+#     token_receive = request.cookies.get('mytoken')
+#     try:
+#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+#         # 프로필 업데이트
+#         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
+#     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+#         return redirect(url_for("home"))
+#
 
-@app.route('/update_profile', methods=['POST'])
-def save_img():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        # 프로필 업데이트
-        return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
+# @app.route('/posting', methods=['POST'])
+# def posting():
+#     token_receive = request.cookies.get('mytoken')
+#     try:
+#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+#         user_info = db.users.find_one({"username": payload["id"]})
+#         comment_receive = request.form["comment_give"]
+#         date_receive = request.form["date_give"]
+#         doc = {
+#             "username": user_info["username"],
+#             "profile_name": user_info["profile_name"],
+#             "profile_pic_real": user_info["profile_pic_real"],
+#             "comment": comment_receive,
+#             "date": date_receive
+#         }
+#         db.posts.insert_one(doc)
+#         return jsonify({"result": "success", 'msg': '포스팅 성공'})
+#     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+#         return redirect(url_for("home"))
 
 
-@app.route('/posting', methods=['POST'])
-def posting():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({"username": payload["id"]})
-        comment_receive = request.form["comment_give"]
-        date_receive = request.form["date_give"]
-        doc = {
-            "username": user_info["username"],
-            "profile_name": user_info["profile_name"],
-            "profile_pic_real": user_info["profile_pic_real"],
-            "comment": comment_receive,
-            "date": date_receive
-        }
-        db.posts.insert_one(doc)
-        return jsonify({"result": "success", 'msg': '포스팅 성공'})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
-
-
-@app.route("/get_posts", methods=['GET'])
-def get_posts():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-
-        # 포스팅 목록 받아오기
-        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다."})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
+# @app.route("/get_posts", methods=['GET'])
+# def get_posts():
+#     token_receive = request.cookies.get('mytoken')
+#     try:
+#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+#
+#         # 포스팅 목록 받아오기
+#         return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다."})
+#     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+#         return redirect(url_for("home"))
 
 
 @app.route('/update_like', methods=['POST'])
@@ -160,7 +170,21 @@ def update_like():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         # 좋아요 수 변경
-        return jsonify({"result": "success", 'msg': 'updated'})
+        user_info = db.users.find_one({"username": payload["id"]})
+        post_id_receive = request.form["post_id_give"]
+        type_receive = request.form["type_give"]
+        action_receive = request.form["action_give"]
+        doc = {
+            "post_id": post_id_receive,
+            "username": user_info["username"],
+            "type": type_receive
+        }
+        if action_receive == "like":
+            db.likes.insert_one(doc)
+        else:
+            db.likes.delete_one(doc)
+        count = db.likes.count_documents({"post_id": post_id_receive, "type": type_receive})
+        return jsonify({"result": "success", 'msg': 'updated', "count": count})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -179,12 +203,9 @@ def save_post():
         extention = file.filename.split('.')[-1]
         today = datetime.now()
         mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
-
         filename = f'file-{mytime}'
-
         save_to = f'static/{filename}.{extention}'
         file.save(save_to)
-
         doc = {
             "username": user_info["username"],
             "profile_name": user_info["profile_name"],
@@ -200,11 +221,92 @@ def save_post():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-
 @app.route("/get_postfood", methods=['GET'])
 def show_post():
-    reviews = list(db.foodlist.find({}, {'_id': False}))
+    token_receive = request.cookies.get('mytoken')
+    reviews = []
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        results = list(db.foodlist.find({}, {}))
+        for result in results:
+            _id = str(result['_id'])
+            name = result['name']
+            location = result['location']
+            comment = result['comment']
+            file = result['file']
+            username = result['username']
+            profile_name = result['profile_name']
+            doc = {
+                "_id": _id,
+                "name": name,
+                "location": location,
+                "comment": comment,
+                "file": file,
+                "username": username,
+                "profile_name": profile_name
+            }
+            reviews.append(doc)
+        # 포스팅 목록 받아오기
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+
+#코멘트
+@app.route('/comment', methods=['POST'])
+def commenting():
+        token_receive = request.cookies.get('mytoken')
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        # 댓글
+        user_info = db.users.find_one({"username": payload["id"]})
+        comment_receive = request.form["comment_give"]
+
+        doc = {
+            "username": user_info["username"],
+            "comment": comment_receive,
+        }
+        db.comments.insert_one(doc)
+        return jsonify({"result": "success", 'msg': '댓글 저장'})
+
+
+#코멘트 보여주는 부분입니다.
+@app.route("/get_comment", methods=['GET'])
+def comment_show():
+    reviews = []
+    results = list(db.comments.find({}, {}))
+    for result in results:
+        _id = str(result['_id'])
+        username = result['username']
+        comment = result['comment']
+
+        doc = {
+            "_id": _id,
+            "username": username,
+            "comment": comment
+
+
+        }
+        reviews.append(doc)
     return jsonify({'all_review': reviews})
+
+
+#삭제부분입니다. 여기 수정
+@app.route("/comment/delete", methods=['POST'])
+def comment_delete():
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    comment_receive = request.form["comment_give"]
+    comment = db.comments.find_one({"comment": comment_receive}, {})
+    username = payload["id"]
+    if username != comment['username']:
+        return jsonify({"result": "failed", 'msg': '댓글 삭제 실패 / 본인의 글이 아닙니다.'})
+    else:
+        db.comments.delete_one({"comment":comment_receive}, {})
+        return jsonify({"result": "success", 'msg': '댓글 삭제 완료'})
+
+    # db.comments.delete_one({}, {'username': False})
+
+
 
 
 if __name__ == '__main__':

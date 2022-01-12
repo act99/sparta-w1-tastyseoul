@@ -22,6 +22,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+    {#    fontawesome#}
+    <!-- ... -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+    />
+    <!-- ... -->
     <title>Title</title>
     <meta property="og:title" content="테이스티 서울"/>
     <meta property="og:description" content="테이스티 서울"/>
@@ -66,6 +73,11 @@
     </style>
 
     <script>
+        function toggle_like(hihi) {
+            console.log(hihi)
+
+        }
+
         $(document).ready(function () {
             $('#cards-box').empty()
             listing()
@@ -107,36 +119,49 @@
                 success: function (response) {
                     let reviews = response['all_review']
                     for (let i = 0; i < reviews.length; i++) {
+                        let _id = reviews[i]['_id']
                         let name = reviews[i]['name']
                         let location = reviews[i]['location']
                         let file = reviews[i]['file']
                         let writer = reviews[i]['profile_name']
-
-                        let temp_html = `<div class="card-columns">
-                                            <div class="card-box">
-                                                <div class="card" href="#">
-                                                    <figure class="image is-4by3">
-                                                         <img src="../static/${file}" class="card-img-top" alt=${name}>
-                                                        </figure>
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">${name}</h5>
-                                                        <p class="card-text">${location}</p>
-                                                        <p class="card-text">작성자: ${writer}</p>
-                                                        <button type="button" class="btn btn-primary">좋아요 👍</button>
-                                                        <span>0</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>`
-
+                        let temp_html = `
+                            <div class="card" style="cursor: pointer" id="${_id}" onclick="window.location.href='/detail/${_id}'">
+                                <figure class="image is-4by3">
+                                     <img src="../static/${file}" class="card-img-top" alt=${name}>
+                                    </figure>
+                                <div class="card-body">
+                                    <h5 class="card-title">${name}</h5>
+                                    <p class="card-text">${location}</p>
+                                    <p class="card-text">작성자: ${writer}</p>
+                                    <a class="btn" aria-label="heart" onclick="toggle_like("hi")">
+                                    <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                    &nbsp;<span class="like-num">2.7k</span>
+                                    <span>0</span></a>
+                                </div>
+                            </div>`
                         $('#cards-box').append(temp_html)
                     }
                 }
             })
         }
+        {#검색기능구현#}
+        function filter() {
+            let search = document.getElementById("input-post").value.toLowerCase();
+            let card = document.getElementsByClassName("card");
+
+            for (let i = 0; i < card.length; i++) {
+                cardtitle = card[i].getElementsByClassName("card-title");
+                cardtext = card[i].getElementsByClassName("card-text");
+                if (cardtitle[0].innerHTML.toLowerCase().indexOf(search) != -1 ||
+                    cardtext[0].innerHTML.toLowerCase().indexOf(search) != -1
+                ) {
+                    card[i].style.display = ""
+                } else {
+                    card[i].style.display = "none"
+                }
+            }
+        }
     </script>
-
-
 </head>
 
 <body>
@@ -147,7 +172,31 @@
 
 </div>
 
-<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;" onclick='$("#modal-edit").addClass("is-active")'>
+
+{#테스트용#}
+<section class="section">
+    <article class="media">
+        <figure class="media-left" style="align-self: center">
+            <a class="image is-32x32" href="#">
+                <img class="is-rounded" src="{{ url_for("static", filename="profile_pics/profile_placeholder.png") }}">
+            </a>
+        </figure>
+        <div class="media-content">
+            <div class="field">
+                <p class="control">
+	                  <input id="input-post" class="input is-rounded" placeholder="무슨 생각을 하고 계신가요?"
+	                         onclick='$("#modal-post").addClass("is-active")'>                </p>
+            </div>
+        </div>
+    </article>
+</section>
+{#테스트용#}
+
+
+
+
+<a class="button level-item has-text-centered" aria-label="edit" style="width: 200px; margin: auto; margin-top: 30px;"
+   onclick='$("#modal-edit").addClass("is-active")'>
     게시물 작성하기<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
 </a>
 
@@ -157,7 +206,7 @@
         <div class="media-content">
             <div class="field">
                 <p class="control">
-                    <input id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
+                    <input onkeyup="filter()" id="input-post" class="input is-rounded" placeholder="맛집 장소를 검색해주세요"
                            onclick='$("#modal-post").addClass("is-active")'></p>
             </div>
         </div>
@@ -166,19 +215,8 @@
 </section>
 
 
-<div class="card-columns" id="cards-box">
-    <div class="card-box">
-        <div class="card" href="#">
-            <img class="card-img-top" src="{{ file }}"
-                 alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">{{ name }}</h5>
-                <p class="card-text">{{ location }}</p>
-                <p class="card-text">{{ location }}</p>
-                <button type="button" class="btn btn-primary">좋아요 👍</button>
-                <span>0</span>
-            </div>
-        </div>
+<div class="card-columns">
+    <div class="card-box" id="cards-box">
     </div>
 </div>
 <div class="modal" id="modal-edit">
