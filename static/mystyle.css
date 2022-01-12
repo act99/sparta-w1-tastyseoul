@@ -1,0 +1,18 @@
+.carousel-item > img {
+    height: 500px;
+    object-fit: cover;
+}
+
+.card-columns {
+    margin: 0px 200px;
+}
+
+.carousel-control-prev {
+    border: 0;
+}
+
+.carousel-control-next {
+    border: 0;
+}
+
+
