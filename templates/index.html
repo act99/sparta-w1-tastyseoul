@@ -38,11 +38,26 @@
 
     <script>
 
+                function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id.toString()},
+                success: function (response) {
+                    alert(response["msg"])
+                    qlike = response["qlike"]
+                    window.location.reload()
+                }
+            });
+        }
+
 
         $(document).ready(function () {
             $('#cards-box').empty()
             listing()
         })
+
+
 
         function posting() {
             let name = $('#foodname').val()
@@ -88,6 +103,9 @@
                         let writer = reviews[i]['profile_name']
                         let likes = reviews[i]['likes']
                         let comments = reviews[i]['comments'].length
+                        let exists = reviews[i]['exists']
+                        let heartname = ""
+                        exists != false ? heartname = "fas fa-heart" : heartname = "far fa-heart"
                         let temp_html = `
                             <div class="card" id="${_id}" style="margin-bottom: 50px" >
                                 <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/${_id}'">
@@ -99,7 +117,7 @@
                                     <p class="card-text">작성자: ${writer}</p>
                                     <p class="card-text">댓글 수: ${comments}</p>
                                     <a class="btn" aria-label="heart" onclick="toggle_like('${_id}')">
-                                    <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                    <span class="icon is-small" id="like-heart"><i class="${heartname}" style="color: red" aria-hidden="true" ></i></span>
                                     &nbsp;<span class="like-num">${likes}</span></a>
 
                                 </div>
@@ -110,17 +128,7 @@
             })
         }
 
-        function toggle_like(_id) {
-            $.ajax({
-                type: "POST",
-                url: "/update_like",
-                data: {_id_give: _id.toString()},
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.reload()
-                }
-            });
-        }
+
 
         {#검색기능구현#}
 
@@ -146,10 +154,6 @@
             alert('로그아웃')
             window.location.replace("/login")
         }
-
-        function move_profile() {
-
-        }
     </script>
 </head>
 
@@ -161,6 +165,10 @@
                 style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
     </a>
     <div style="float: right; margin-right: 30px;">
+        <button class="nav-item button is-info is-light"
+                style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                onclick="window.location.href='/user/{{ user_info.username }}'">profile
+        </button>
         <button class="nav-item button is-info is-light"
                 style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
                 onclick="sign_out()" id="logout">logout
@@ -184,10 +192,10 @@
     </div>
 
     <div class="fab-container" onclick='$("#modal-edit").addClass("is-active")'>
-<div class="button3 iconbutton">
-<i class="fas fa-plus"></i>
-</div>
-</div>
+        <div class="button3 iconbutton">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
 
     {#<label for="site-search"></label>#}
     {#<section class="section search-section">#}

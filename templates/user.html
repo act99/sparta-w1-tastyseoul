@@ -1,38 +1,236 @@
 <!doctype html>
 <html lang="en">
-    <head>
+<head>
+    <meta charset="UTF-8">
 
-        <!-- Webpage Title -->
-        <title>{{ user_info.name }} | SWEETER</title>
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <!-- lottiefiles -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+    <title>{{ user_info.profile_name }} | 마이페이지</title>
+    <meta property="og:title" content="테이스티 서울"/>
+    <meta property="og:description" content="서울의 맛집을 한눈에"/>
+    <meta property="og:image" content=""/>
+    <script>
+        $(document).ready(function () {
+            $('#cards-box').empty()
+            get_mypost('{{ user_info.username }}')
+        })
 
-        <!-- Bulma CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-        <!-- Font Awesome CSS -->
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        function toggle_like(_id) {
+            $.ajax({
+                type: "POST",
+                url: "/update_like",
+                data: {_id_give: _id.toString()},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
 
-        <!-- JS -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('로그아웃!')
+            window.location.href = "/login"
+        }
 
-        <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
-        <script>
-            function sign_out() {
-                $.removeCookie('mytoken', {path: '/'});
-                alert('로그아웃!')
-                window.location.href = "/login"
+        function get_likepost() {
+            $('#cards-box').empty()
+            let temp_html = `
+            {% for item in like_list %}
+
+                                        <div class="card" id="{{ item._id }}" style="margin-bottom: 50px" >
+                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/
+                {{ item._id }}'">
+                                     <img src="../static/{{ item.file }}" class="card-img-top" alt={{ item.name }}}>
+                                    </figure>
+                                <div class="card-body" >
+                                    <h5 class="card-title">{{ item.name }}</h5>
+                                    <p class="card-text">{{ item.location }}</p>
+                                    <p class="card-text">작성자: {{ item.profile_name }}</p>
+                                    <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                    &nbsp;<span class="like-num">{{ item.likes }}</span>
+
+                                </div>
+                            </div>
+         {% endfor %}
+            `
+            $('#cards-box').append(temp_html)
+        }
+
+        function get_mypost(username) {
+            $('#cards-box').empty()
+            $.ajax({
+                type: "GET",
+                url: "/get_mypost",
+                data: {username_give: username},
+                success: function (response) {
+                    let reviews = response['all_review']
+                    for (let i = 0; i < reviews.length; i++) {
+                        let _id = reviews[i]['_id']
+                        let name = reviews[i]['name']
+                        let location = reviews[i]['location']
+                        let file = reviews[i]['file']
+                        let writer = reviews[i]['profile_name']
+                        let likes = reviews[i]['likes']
+                        let comments = reviews[i]['comments'].length
+                        let temp_html = `
+                            <div class="card" id="${_id}" style="margin-bottom: 50px" >
+                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/${_id}'">
+                                     <img src="../static/${file}" class="card-img-top" alt=${name}>
+                                    </figure>
+                                <div class="card-body" >
+                                    <h5 class="card-title">${name}</h5>
+                                    <p class="card-text">${location}</p>
+                                    <p class="card-text">작성자: ${writer}</p>
+                                    <span class="icon is-small"><i class="far fa-heart" style="color: red" aria-hidden="true" ></i></span>
+                                    &nbsp;<span class="like-num">${likes}</span>
+                                </div>
+                            </div>`
+                        $('#cards-box').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        {#검색기능구현#}
+
+        function filter() {
+            let search = document.getElementById("input-post").value.toLowerCase();
+            let card = document.getElementsByClassName("card");
+
+            for (let i = 0; i < card.length; i++) {
+                cardtitle = card[i].getElementsByClassName("card-title");
+                cardtext = card[i].getElementsByClassName("card-text");
+                if (cardtitle[0].innerHTML.toLowerCase().indexOf(search) != -1 ||
+                    cardtext[0].innerHTML.toLowerCase().indexOf(search) != -1
+                ) {
+                    card[i].style.display = ""
+                } else {
+                    card[i].style.display = "none"
+                }
             }
-        </script>
+        }
 
-    </head>
-    <body>
-        {% if status %}
-            내 프로필 페이지
-        {% else %}
-            다른 사람 프로필 페이지
-        {% endif %}
-    </body>
+        function sign_out() {
+            document.cookie = "mytoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            alert('로그아웃')
+            window.location.replace("/login")
+        }
+
+    </script>
+    <style>
+        .wrap {
+            margin: 10px auto auto auto;
+            width: 600px;
+        }
+
+        a:link {
+            text-decoration: none;
+        }
+
+        a:visited {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .commentbox {
+            margin-bottom: 30px;
+        }
+
+        * {
+            font-family: 'Do Hyeon', sans-serif
+        }
+    </style>
+</head>
+<body>
+
+{% if status %}
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation"
+         style="background-color: #ffc9c0; z-index: 1">
+        <a class="navbar-item" href="/" style="margin-left: 30px;">
+            <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
+            <strong class="logoText"
+                    style="font-family: 'Do Hyeon', sans-serif; margin-left: 5px; font-size: larger;">TASTYSEOUL</strong>
+        </a>
+        <div style="float: right; margin-right: 30px;">
+            <button class="nav-item button is-info is-light"
+                    style="font-family: 'Do Hyeon', sans-serif; margin-top: 8px;"
+                    onclick="sign_out()" id="logout">logout
+            </button>
+        </div>
+        </div>
+    </nav>
+    {% if like_list|length == 0 %}
+        <div style="background-color: #fff1ee; height: 100vh">
+    {% else %}
+        <div style="background-color: #fff1ee; height: 100%">
+    {% endif %}
+    <div class="wrap">
+
+        <div id="foodcard" style="padding-top: 100px; z-index: 3">
+            <div class="card mb-3">
+                <div class="card-body" style="margin: 10px; padding: 0px 50px">
+                    <lottie-player src="https://assets6.lottiefiles.com/packages/lf20_cUG5w8.json"
+                                   background="transparent" speed="0.6" style="width: 500px; height: 250px;"
+                                   autoplay></lottie-player>
+                    <h5 class="card-text"
+                        style="font-size: 32px; color: coral; margin-top: 50px">{{ user_info.profile_name }} 님
+                        어서오세요!</h5>
+                    <h1 class="card-title" style="font-size: 22px; margin-top: 50px">{{ user_info.username }}</h1>
+                </div>
+
+                <footer class="card-footer" style="font-size: 20px;">
+                    <a onclick="get_mypost('{{ user_info.username }}')" class="card-footer-item has-text-info">
+                        내 게시물
+                        </span>
+                    </a>
+
+                    <a onclick="get_likepost()"
+                       class="card-footer-item has-text-danger">
+                        좋아하는 게시물
+                        </span>
+                    </a>
+                </footer>
+            </div>
+            <input onkeyup="filter()" id="input-post" class="input is-rounded search-ok" type="text"
+                   placeholder="찾으실 내용을 검색해주세요"
+                   onclick='$("#modal-post").addClass("is-active")'></p>
+            <div class="card-columns">
+                <div class="card-box" id="cards-box">
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    404 Error
+{% endif %}
+</div>
+</body>
 </html>

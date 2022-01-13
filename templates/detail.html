@@ -55,6 +55,13 @@
         * {
             font-family: 'Do Hyeon', sans-serif
         }
+        .iconbutton i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+        }
     </style>
     <script>
         $(document).ready(function () {
@@ -87,6 +94,7 @@
                 success: function (response) {
                     alert(response["msg"])
                     window.location.reload()
+                    window.location.reload()
                 }
             });
         }
@@ -109,11 +117,20 @@
             alert('로그아웃')
             window.location.replace("/login")
         }
+
+        {#뒤로가기 버튼 누를 시 다음 페이지에서 강제 새로고침 후 뒤로가기 (그럼 렌더링이 잘 됨)#}
+
+        window.onpageshow = function (event) {
+            if (event.persisted) {
+                document.location.reload();
+            }
+        };
     </script>
 </head>
 <body>
 <!--네비게이션(로고+메뉴)-->
-<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: #ffc9c0; z-index: 1">
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation"
+     style="background-color: #ffc9c0; z-index: 1">
     <a class="navbar-item" href="/" style="margin-left: 30px;">
         <img src="{{ url_for('static', filename='logo_tastySeoul.png') }}">
         <strong class="logoText"
@@ -130,64 +147,70 @@
 
 <!--맛집 게시물 출력-->
 <div style="background-color: #fff1ee">
-<div class="wrap">
-    <div id="foodcard" style="padding-top: 100px; z-index: 3">
-        <div class="card mb-3">
-            <img src="../static/{{ food.file }}"
-                 class="card-img-top"
-                 alt="테스트">
-            <div class="card-body" style="margin: 10px;">
-                <h1 class="card-title">{{ food.name }}</h1>
-                <h5 class="card-text">{{ food.location }}</h5>
-                <br>
-                <label style="margin-bottom: 10px;"><b>{{ food.comment }}</b></label>
-            </div>
-            <footer class="card-footer" style="font-size: 20px;">
-                <a onclick="toggle_like('{{ food._id }}')" class="card-footer-item has-text-info">
-                    좋아요 {{ food.likes }}
-                    <span class="icon">
-              <i class="fa fa-heart"></i>
+    <div class="wrap">
+        <div id="foodcard" style="padding-top: 100px; z-index: 3">
+            <div class="card mb-3">
+                <img src="../static/{{ food.file }}"
+                     class="card-img-top"
+                     alt="테스트">
+                <div class="card-body" style="margin: 10px;">
+                    <h1 class="card-title">{{ food.name }}</h1>
+                    <h5 class="card-text">{{ food.location }}</h5>
+                    <br>
+                    <label style="margin-bottom: 10px;"><b>{{ food.comment }}</b></label>
+                </div>
+
+                <footer class="card-footer" style="font-size: 20px;">
+
+                    <a onclick="toggle_like('{{ food._id }}')" class="card-footer-item has-text-info">
+                        좋아요 {{ food.likes }}
+                        <span class="icon">
+                        {% if exists == true %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
+                        {% endif %}
             </span>
-                </a>
-                <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')"
-                   class="card-footer-item has-text-danger">
-                    삭제
-                    <span class="icon">
+                    </a>
+                    <a href="#" onclick="deletefood('{{ food._id }}', '{{ food.username }}')"
+                       class="card-footer-item has-text-danger">
+                        삭제
+                        <span class="icon">
               <i class="fa fa-ban"></i>
             </span>
-                </a>
-            </footer>
+                    </a>
+                </footer>
+            </div>
+        </div>
+
+        <!--유저들 리뷰출력 및 코멘트작성-->
+        <div class="box review-making-box" id="box-review-making-box">
+
+            <div class="field">
+                <label class="label review-box">＃코멘트 쓰기</label>
+                <div class="control">
+                    <textarea class="textarea" id="comment-post" placeholder="이 맛집에 대한 코멘트를 남겨주세요!"></textarea>
+                </div>
+            </div>
+            <div class="field is-grouped">
+                <div class="control" style="margin: auto">
+                    <button id="review-box" onclick="comment('{{ food._id }}')" class="nav-item button is-info">저장하기
+                    </button>
+                </div>
+            </div>
+            <section style="">
+                <div id="nickname-box" class="container">
+                    {% for comment in food.comments %}
+                        <div class="commentbox">
+                            <p>{{ comment.comment }}</p>
+                            <p>{{ comment.username }}</p>
+                            <button type="button" class="btn btn-primary">삭제</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
         </div>
     </div>
-
-    <!--유저들 리뷰출력 및 코멘트작성-->
-    <div class="box review-making-box" id="box-review-making-box">
-
-        <div class="field">
-            <label class="label review-box">＃코멘트 쓰기</label>
-            <div class="control">
-                <textarea class="textarea" id="comment-post" placeholder="이 맛집에 대한 코멘트를 남겨주세요!"></textarea>
-            </div>
-        </div>
-        <div class="field is-grouped">
-            <div class="control" style="margin: auto">
-                <button id="review-box" onclick="comment('{{ food._id }}')" class="nav-item button is-info">저장하기
-                </button>
-            </div>
-        </div>
-        <section style="">
-            <div id="nickname-box" class="container">
-                {% for comment in food.comments %}
-                    <div class="commentbox">
-                        <p>{{ comment.comment }}</p>
-                        <p>{{ comment.username }}</p>
-                        <button type="button" class="btn btn-primary">삭제</button>
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
-    </div>
-</div>
 </div>
 </body>
 </html>
