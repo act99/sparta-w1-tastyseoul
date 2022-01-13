@@ -1,0 +1,29 @@
+
+*{
+    font-family: 'Do Hyeon', sans-serif
+}
+
+.Tasty_Seoul {
+    margin: auto;
+}
+
+body {
+    height: 100vh;
+
+}
+
+.navbar-item {
+}
+
+.logoText {
+    text-align: center;
+    font-size: larger;
+    height: 35px;
+
+}
+
+.box {
+    width: 320px;
+    margin: auto;
+
+}

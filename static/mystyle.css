@@ -1,0 +1,99 @@
+
+body {
+}
+
+* {
+    font-family: 'Do Hyeon', sans-serif
+}
+
+.wrap {
+    margin: 10px auto auto auto;
+    width: 600px;
+}
+
+
+.main-img {
+    display: flex;
+    margin-top: 10%;
+    height: 400px;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.navbar {
+    position: sticky;
+    top: 0px;
+}
+
+.h1-box {
+
+    margin: auto;
+
+}
+
+h1 {
+    font-size: 100px;
+}
+
+.search-ok {
+    margin-top: 10%;
+    width: 100%;
+}
+
+.card-columns {
+    margin-top: 30px;
+}
+
+.earch-section {
+    padding: 0;
+}
+
+.review-box {
+    width: 40%;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.fab-container {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.iconbutton {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    background: #ff9583;
+}
+
+.button3 {
+    width: 60px;
+    height: 60px;
+    background: #ff9583;
+}
+
+.iconbutton i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: white;
+}
+
+.buttonFont {
+    font-family: 'Do Hyeon', sans-serif
+}
