@@ -9,7 +9,6 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
-
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
@@ -18,6 +17,7 @@ SECRET_KEY = 'SPARTA'
 # client = MongoClient('mongodb://test:test@localhost', 27017)
 client = MongoClient('localhost', 27017)
 db = client.groupsix
+
 
 # //////////////////////////////////////////////////////
 ####################### 렌더링 라우터 #####################
@@ -40,6 +40,7 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
+
 # 디테일----------------------
 @app.route('/detail/<id>')
 def detail(id):
@@ -50,7 +51,6 @@ def detail(id):
         # 클릭한 맛집 정보를 가져온 후 그 맛집의 아이디 값을 가져와 db에서 찾아줌
         food_info = db.foodlist.find_one({'_id': ObjectId(id)})
 
-
         # 좋아요 눌렀는지 안 눌렀는지 확인 후 exists 메세지로 True False 보내줌.
 
         if str(food_info['_id']) in db.users.find_one({"username": payload['id']})['likelist']:
@@ -58,7 +58,6 @@ def detail(id):
         else:
             exists = False
 
-        print(food_info)
         # 맛집 정보를 jinja2사용을 위해 넘겨줌
         return render_template("detail.html", user_info=user_info, food=food_info, exists=exists)
     except jwt.ExpiredSignatureError:
@@ -66,12 +65,14 @@ def detail(id):
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
+
 # 로그인 & 회원가입
 @app.route('/login')
 def login():
     # msg는 로그인 alert 메세지
     msg = request.args.get("msg")
     return render_template('login.html', msg=msg)
+
 
 # 프로필
 @app.route('/user/<username>')
@@ -85,14 +86,12 @@ def user(username):
         like_list = []
         like_id_list = user_info['likelist']
         for like_id in like_id_list:
-            like_post = db.foodlist.find_one({"_id":ObjectId(like_id)}, {})
+            like_post = db.foodlist.find_one({"_id": ObjectId(like_id)}, {})
             if like_post is not None:
                 like_list.append(like_post)
-        print(like_list)
         return render_template('user.html', user_info=user_info, status=status, like_list=like_list)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
-
 
 
 # //////////////////////////////////////////////////////
@@ -108,9 +107,9 @@ def sign_up():
     # 패스워드 해쉬화 -> sha256으로 해쉬화 한 후 hexdigest로 보안 해시 & 압축
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     doc = {
-        "username": username_receive,                               # 아이디
-        "password": password_hash,                                  # 비밀번호
-        "profile_name": profile_name_receive,                           # 프로필 이름 기본값은 아이디
+        "username": username_receive,  # 아이디
+        "password": password_hash,  # 비밀번호
+        "profile_name": profile_name_receive,  # 프로필 이름 기본값은 아이디
         'likelist': []
         # "profile_pic": "",                                          # 프로필 사진 파일 이름
         # "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
@@ -132,9 +131,9 @@ def sign_in():
 
     if result is not None:
         payload = {
-         'id': username_receive,
+            'id': username_receive,
             # 토큰 만료시간 => 24시간
-         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
         }
         # 토큰-> payload 값과 시크릿키를 합쳐 HS256 알고리즘으로 해쉬화한 후 decode (string값 변환) / PyJWT 2.0 이상부턴 decode 붙이면 안됨 (패치됨)
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
@@ -143,7 +142,6 @@ def sign_in():
     # 찾지 못하면
     else:
         return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
-
 
 
 # 중복확인
@@ -194,6 +192,7 @@ def save_post():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+
 # 게시물 보여주기
 @app.route("/get_postfood", methods=['GET'])
 def show_post():
@@ -226,15 +225,15 @@ def show_post():
                 "file": file,
                 "username": username,
                 "profile_name": profile_name,
-                'likes':likes,
-                'comments':comments,
+                'likes': likes,
+                'comments': comments,
                 'exists': exists
             }
             reviews.append(doc)
             # 최신버전 가져오기
             reviews.reverse()
         # 포스팅 목록 받아오기
-        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review': reviews})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -246,7 +245,7 @@ def get_mypost():
     reviews = []
     try:
         # 내가 올린 맛집 정보를 가져옴
-        foodlist = db.foodlist.find({'username':username_receive}, {})
+        foodlist = db.foodlist.find({'username': username_receive}, {})
         # db의 내 맛집 게시물 정보들을 가져옴
         for result in foodlist:
             _id = str(result['_id'])
@@ -266,17 +265,16 @@ def get_mypost():
                 "file": file,
                 "username": username,
                 "profile_name": profile_name,
-                'likes':likes,
-                'comments':comments
+                'likes': likes,
+                'comments': comments
             }
             reviews.append(doc)
             # 최신버전 가져오기
             reviews.reverse()
         # 포스팅 목록 받아오기
-        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review': reviews})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
-
 
 
 # 좋아요 기능 구현
@@ -290,7 +288,7 @@ def update_like():
         user_info = db.users.find_one({"username": payload["id"]})
         username = user_info['username']
         # 만약 해당 유저의 db의 좋아요 리스트에 좋아요 버튼을 누른 게시물 아이디가 없다면
-        if _id_receive not in db.users.find_one({'username':username})['likelist']:
+        if _id_receive not in db.users.find_one({'username': username})['likelist']:
             # 유저 좋아요 리스트에 해당 게시물 아이디값 추가
             db.users.update_one({'username': username}, {'$push': {'likelist': _id_receive}})
             # 해당 게시물의 좋아요 수를 찾아냄
@@ -312,45 +310,63 @@ def update_like():
 #
 
 
-#코멘트
+# 코멘트
 @app.route('/comment', methods=['POST'])
 def commenting():
-        token_receive = request.cookies.get('mytoken')
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        posting_id_receive = request.form['posting_id_give']
-        comment_receive = request.form["comment_give"]
-        # 댓글
-        user_info = db.users.find_one({"username": payload["id"]})
-        doc = {
-            'username':user_info['username'],
-            'comment':comment_receive,
-            # id 값을 랜덤을 만들어 저장시킴
-            '_id':random.randint(1,10000)
-        }
-        db.foodlist.update_one({"_id":ObjectId(posting_id_receive)}, {'$push': {'comments':doc}})
-
-        # doc = {
-        #     "username": user_info["username"],
-        #     "comment": comment_receive,
-        #     "posting_id": posting_id_receive
-        # }
-        # db.comments.insert_one(doc)
-        return jsonify({"result": "success", 'msg': '댓글 저장'})
-
-
-#삭제부분입니다. 여기 수정
-@app.route("/comment/delete", methods=['POST'])
-def comment_delete():
     token_receive = request.cookies.get('mytoken')
     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    posting_id_receive = request.form['posting_id_give']
     comment_receive = request.form["comment_give"]
-    comment = db.comments.find_one({"comment": comment_receive}, {})
-    username = payload["id"]
-    if username != comment['username']:
-        return jsonify({"result": "failed", 'msg': '댓글 삭제 실패 / 본인의 글이 아닙니다.'})
-    else:
-        db.comments.delete_one({"comment":comment_receive}, {})
-        return jsonify({"result": "success", 'msg': '댓글 삭제 완료'})
+    # 댓글
+    user_info = db.users.find_one({"username": payload["id"]})
+    doc = {
+        'username': user_info['username'],
+        'comment': comment_receive,
+        # id 값을 랜덤을 만들어 저장시킴
+        '_id': random.randint(1, 10000)
+    }
+    db.foodlist.update_one({"_id": ObjectId(posting_id_receive)}, {'$push': {'comments': doc}})
+
+    # doc = {
+    #     "username": user_info["username"],
+    #     "comment": comment_receive,
+    #     "posting_id": posting_id_receive
+    # }
+    # db.comments.insert_one(doc)
+    return jsonify({"result": "success", 'msg': '댓글 저장'})
+
+
+# 삭제부분입니다. 여기 수정
+# @app.route("/delete_comment", methods=['POST'])
+# def delete_comment():
+#     token_receive = request.cookies.get('mytoken')
+#     a = []
+#     try:
+#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+#         comment_id_receive = request.form["comment_id_give"]
+#         food_id_receive = request.form["food_id_give"]
+#         food_comments = db.foodlist.find_one({"_id": ObjectId(food_id_receive)})['comments']
+#         print(food_comments)
+#         for comment in food_comments:
+#             if comment["username"] == payload['id'] and comment['_id'] == comment_id_receive:
+#                 a.append("hi")
+#                 return jsonify({"result": "success", 'msg': '댓글 삭제 완료'})
+#             else:
+#                 return jsonify({"result": "fail", 'msg': '댓글 삭제 실패'})
+#         print(a + "-------------------------------------------------")
+
+        # if db.foodlist.find_one({"_id": ObjectId(food_id_receive)}, {'comments': {"_id": comment_id_receive}})['comments']['username'] == payload['id']:
+        #     return jsonify({"result": "success", 'msg': '댓글 삭제 완료'})
+        # else:
+        #     return jsonify({"result": "fail", 'msg': '댓글 삭제 실패'})
+
+
+
+
+        # db.foodlist.update_one({"_id": ObjectId(food_id_receive)}, {'$pull': {"comments": {'_id': comment_id_receive}}})
+        # return jsonify({"result": "success", 'msg': '댓글 삭제 완료'})
+    # except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+    #     return redirect(url_for("home"))
 
     # db.comments.delete_one({}, {'username': False})
 
@@ -361,14 +377,12 @@ def post_delete():
     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
     _id_receive = request.form["_id_give"]
     writer_receive = request.form["writer_give"]
-    writer = db.foodlist.find_one({"_id":ObjectId(_id_receive), "username":writer_receive}, {})['username']
+    writer = db.foodlist.find_one({"_id": ObjectId(_id_receive), "username": writer_receive}, {})['username']
     if writer == payload['id']:
-        db.foodlist.delete_one({"_id":ObjectId(_id_receive)}, {})
+        db.foodlist.delete_one({"_id": ObjectId(_id_receive)}, {})
         return jsonify({"result": "success", 'msg': '글 삭제 완료'})
     else:
         return jsonify({"result": "failed", 'msg': '본인 글이 아니라 삭제가 불가능합니다.'})
-    
-
 
 
 if __name__ == '__main__':

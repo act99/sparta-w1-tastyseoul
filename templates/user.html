@@ -63,8 +63,7 @@
             {% for item in like_list %}
 
                                         <div class="card" id="{{ item._id }}" style="margin-bottom: 50px" >
-                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/
-                {{ item._id }}'">
+                                <figure class="image is-4by3"  style="cursor: pointer" onclick="window.location.href='/detail/{{ item._id }}'">
                                      <img src="../static/{{ item.file }}" class="card-img-top" alt={{ item.name }}}>
                                     </figure>
                                 <div class="card-body" >
