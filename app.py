@@ -49,9 +49,18 @@ def detail(id):
         user_info = db.users.find_one({"username": payload["id"]})
         # 클릭한 맛집 정보를 가져온 후 그 맛집의 아이디 값을 가져와 db에서 찾아줌
         food_info = db.foodlist.find_one({'_id': ObjectId(id)})
+
+
+        # 좋아요 눌렀는지 안 눌렀는지 확인 후 exists 메세지로 True False 보내줌.
+
+        if str(food_info['_id']) in db.users.find_one({"username": payload['id']})['likelist']:
+            exists = True
+        else:
+            exists = False
+
         print(food_info)
         # 맛집 정보를 jinja2사용을 위해 넘겨줌
-        return render_template("detail.html", user_info=user_info, food=food_info)
+        return render_template("detail.html", user_info=user_info, food=food_info, exists=exists)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -72,9 +81,15 @@ def user(username):
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (username == payload["id"])  # 내 프로필이면 True, 다른 사람 프로필 페이지면 False
-
         user_info = db.users.find_one({"username": username}, {"_id": False})
-        return render_template('user.html', user_info=user_info, status=status)
+        like_list = []
+        like_id_list = user_info['likelist']
+        for like_id in like_id_list:
+            like_post = db.foodlist.find_one({"_id":ObjectId(like_id)}, {})
+            if like_post is not None:
+                like_list.append(like_post)
+        print(like_list)
+        return render_template('user.html', user_info=user_info, status=status, like_list=like_list)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -188,7 +203,52 @@ def show_post():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         # db의 모든 맛집 게시물 정보들을 가져옴
         results = list(db.foodlist.find({}, {}))
+        # 좋아요 눌렀는지 안 눌렀는지 확인 후 exists 메세지로 True False 보내줌.
         for result in results:
+            if str(result['_id']) in db.users.find_one({"username": payload['id']})['likelist']:
+                exists = True
+            else:
+                exists = False
+            _id = str(result['_id'])
+            name = result['name']
+            location = result['location']
+            comment = result['comment']
+            file = result['file']
+            username = result['username']
+            profile_name = result['profile_name']
+            likes = result['likes']
+            comments = result['comments']
+            doc = {
+                "_id": _id,
+                "name": name,
+                "location": location,
+                "comment": comment,
+                "file": file,
+                "username": username,
+                "profile_name": profile_name,
+                'likes':likes,
+                'comments':comments,
+                'exists': exists
+            }
+            reviews.append(doc)
+            # 최신버전 가져오기
+            reviews.reverse()
+        # 포스팅 목록 받아오기
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+
+# 프로필 내 게시물 가져오기
+@app.route("/get_mypost", methods=['GET'])
+def get_mypost():
+    username_receive = request.args['username_give']
+    reviews = []
+    try:
+        # 내가 올린 맛집 정보를 가져옴
+        foodlist = db.foodlist.find({'username':username_receive}, {})
+        # db의 내 맛집 게시물 정보들을 가져옴
+        for result in foodlist:
             _id = str(result['_id'])
             name = result['name']
             location = result['location']
@@ -210,10 +270,13 @@ def show_post():
                 'comments':comments
             }
             reviews.append(doc)
+            # 최신버전 가져오기
+            reviews.reverse()
         # 포스팅 목록 받아오기
         return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", 'all_review':reviews})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
 
 
 # 좋아요 기능 구현
@@ -245,6 +308,8 @@ def update_like():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+
+#
 
 
 #코멘트
